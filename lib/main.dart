@@ -117,6 +117,8 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
           user: _user,
           bubbleBuilder: _bubbleBuilder,
           onEndReached: _handleEndReached,
+          showUserAvatars: true,
+          showUserNames: true,
         ),
       ),
     );
