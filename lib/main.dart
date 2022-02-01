@@ -12,28 +12,28 @@ String randomString() {
 }
 
 void main() {
-  runApp(const MyApp());
+  runApp(const SolipsisChat());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class SolipsisChat extends StatelessWidget {
+  const SolipsisChat({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: MyHomePage(),
+      home: SolipsisChatHome(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class SolipsisChatHome extends StatefulWidget {
+  const SolipsisChatHome({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _SolipsisChatHomeState createState() => _SolipsisChatHomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   List<types.Message> _messages = [];
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
 
