@@ -35,7 +35,7 @@ class SolipsisChatHome extends StatefulWidget {
 }
 
 class _SolipsisChatHomeState extends State<SolipsisChatHome> {
-  List<types.Message> _messages = [];
+  final List<types.Message> _messages = [];
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
 
   void _addMessage(types.Message message) {
