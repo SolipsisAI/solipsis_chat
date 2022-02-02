@@ -65,20 +65,7 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   }
 
   Future<void> _handleBotResponse() async {
-    final uri = Uri.parse(
-      'https://litipsum.com/api/pride-and-prejudice/1/json',
-    );
-    final response = await http.get(uri);
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    final data = json['text'] as List<dynamic>;
-    final text = data[0];
-    final message = types.TextMessage(
-      author: _bot,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: randomString(),
-      text: text,
-    );
-
+    final message = await randomMessage(_bot);
     _addMessage(message);
   }
 
