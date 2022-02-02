@@ -40,6 +40,7 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   int _page = 0;
   List<types.Message> _messages = [];
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
+  final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
   @override
   void initState() {
@@ -70,6 +71,24 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
     });
   }
 
+  Future<void> _handleBotResponse() async {
+    final uri = Uri.parse(
+      'https://litipsum.com/api/pride-and-prejudice/1/json',
+    );
+    final response = await http.get(uri);
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = json['text'] as List<dynamic>;
+    final text = data[0];
+    final message = types.TextMessage(
+      author: _bot,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: randomString(),
+      text: text,
+    );
+
+    _addMessage(message);
+  }
+
   void _addMessage(types.Message message) {
     setState(() {
       _messages.insert(0, message);
@@ -86,6 +105,7 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
     );
 
     _addMessage(textMessage);
+    _handleBotResponse();
   }
 
   Widget _bubbleBuilder(
