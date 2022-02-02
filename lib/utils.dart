@@ -1,15 +1,14 @@
-import 'dart:math';
 import 'dart:convert';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 const String loremIpsumApiUrl =
     'https://litipsum.com/api/pride-and-prejudice/1/json';
 
 String randomString() {
-  final random = Random.secure();
-  final values = List<int>.generate(16, (i) => random.nextInt(255));
-  return base64UrlEncode(values);
+  const uuid = Uuid();
+  return uuid.v4();
 }
 
 Future<types.Message> randomMessage(types.User user) async {
