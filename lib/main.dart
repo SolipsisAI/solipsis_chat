@@ -1,3 +1,4 @@
+import 'dart:developer' as logger;
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -47,20 +48,22 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
 
   Future<void> _handleEndReached() async {
     final uri = Uri.parse(
-      'https://api.instantwebtools.net/v1/passenger?page=$_page&size=20',
+      'https://reqres.in/api/unknown?page=$_page&per_page=20',
     );
     final response = await http.get(uri);
     final json = jsonDecode(response.body) as Map<String, dynamic>;
     final data = json['data'] as List<dynamic>;
+    logger.log('data: $data');
     final messages = data
         .map(
           (e) => types.TextMessage(
             author: _user,
-            id: e['_id'] as String,
+            id: '$e["id"]',
             text: e['name'] as String,
           ),
         )
         .toList();
+    logger.log('messages: $messages');
     setState(() {
       _messages = [..._messages, ...messages];
       _page = _page + 1;
@@ -71,6 +74,7 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
     setState(() {
       _messages.insert(0, message);
     });
+    logger.log('data: $message');
   }
 
   void _handleSendPressed(types.PartialText message) {
