@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 
 const String loremIpsumApiUrl =
     'https://litipsum.com/api/pride-and-prejudice/1/json';
-const int lettersPerMillisecond = 3;
+const int wordsPerMinute = 100;
 
 String randomString() {
   const uuid = Uuid();
@@ -27,6 +27,7 @@ Future<types.TextMessage> randomMessage(types.User user) async {
 }
 
 int messageDelay(types.TextMessage message) {
-  // seconds
-  return message.text.length * lettersPerMillisecond;
+  final List words = message.text.split(" ");
+  final int wordCount = words.length;
+  return (wordCount ~/ wordsPerMinute) * 60;
 }

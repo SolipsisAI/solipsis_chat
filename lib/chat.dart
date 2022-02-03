@@ -53,8 +53,8 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   Future<void> _handleBotResponse() async {
     _showTyping = true;
     final message = await randomMessage(_bot);
-    await Future.delayed(Duration(milliseconds: messageDelay(message)),
-        () => _showTyping = false);
+    await Future.delayed(
+        Duration(seconds: messageDelay(message)), () => _showTyping = false);
     _addMessage(message);
   }
 
