@@ -15,6 +15,7 @@ class SolipsisChatHome extends StatefulWidget {
 }
 
 class _SolipsisChatHomeState extends State<SolipsisChatHome> {
+  bool _showTyping = false;
   int _page = 0;
   List<types.Message> _messages = [];
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
@@ -50,8 +51,10 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   }
 
   Future<void> _handleBotResponse() async {
+    _showTyping = true;
     final message = await randomMessage(_bot);
-    await Future.delayed(Duration(milliseconds: messageDelay(message)));
+    await Future.delayed(Duration(milliseconds: messageDelay(message)),
+        () => _showTyping = false);
     _addMessage(message);
   }
 
@@ -107,6 +110,7 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
           user: _user,
           bubbleBuilder: _bubbleBuilder,
           onEndReached: _handleEndReached,
+          showTyping: _showTyping,
           showUserAvatars: true,
           showUserNames: true,
         ),
