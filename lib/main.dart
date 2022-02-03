@@ -10,8 +10,17 @@ class SolipsisChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SolipsisChatHome(),
-    );
+    return GestureDetector(
+        onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+
+          if (!currentFocus.hasPrimaryFocus) {
+            currentFocus.unfocus();
+          }
+        },
+        child: const MaterialApp(
+          title: 'SolipsisChat',
+          home: SolipsisChatHome(),
+        ));
   }
 }
