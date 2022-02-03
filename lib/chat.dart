@@ -50,8 +50,8 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   }
 
   Future<void> _handleBotResponse() async {
-    // TODO: Determine if running in debug mode and call randomMessage if so
     final message = await randomMessage(_bot);
+    await Future.delayed(Duration(milliseconds: messageDelay(message)));
     _addMessage(message);
   }
 

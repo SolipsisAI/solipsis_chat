@@ -5,13 +5,14 @@ import 'package:uuid/uuid.dart';
 
 const String loremIpsumApiUrl =
     'https://litipsum.com/api/pride-and-prejudice/1/json';
+const int lettersPerSecond = 3;
 
 String randomString() {
   const uuid = Uuid();
   return uuid.v4();
 }
 
-Future<types.Message> randomMessage(types.User user) async {
+Future<types.TextMessage> randomMessage(types.User user) async {
   final uri = Uri.parse(loremIpsumApiUrl);
   final response = await http.get(uri);
   final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -23,4 +24,9 @@ Future<types.Message> randomMessage(types.User user) async {
     id: randomString(),
     text: text,
   );
+}
+
+int messageDelay(types.TextMessage message) {
+  // milliseconds
+  return message.text.length * lettersPerSecond;
 }
