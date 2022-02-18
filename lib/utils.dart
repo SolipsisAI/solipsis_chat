@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 const String loremIpsumApiUrl =
-    'https://litipsum.com/api/pride-and-prejudice/1/json';
+    'https://litipsum.com/api/dr-jekyll-and-mr-hyde/1/json';
 const int wordsPerMinute = 100;
 
 String randomString() {
