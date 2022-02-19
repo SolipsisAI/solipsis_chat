@@ -5,11 +5,14 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
+
+import 'store.dart';
 import 'utils.dart';
 
 class SolipsisChatHome extends StatefulWidget {
-  const SolipsisChatHome({Key? key}) : super(key: key);
+  const SolipsisChatHome({Key? key, required this.storage}) : super(key: key);
 
+  final CounterStorage storage;
   @override
   _SolipsisChatHomeState createState() => _SolipsisChatHomeState();
 }

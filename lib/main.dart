@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+
 import 'chat.dart';
+import 'store.dart';
 
 void main() {
-  runApp(const SolipsisChat());
+  runApp(SolipsisChat(storage: CounterStorage()));
 }
 
 class SolipsisChat extends StatelessWidget {
-  const SolipsisChat({Key? key}) : super(key: key);
+  const SolipsisChat({Key? key, required this.storage}) : super(key: key);
+
+  final CounterStorage storage;
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +22,9 @@ class SolipsisChat extends StatelessWidget {
             currentFocus.unfocus();
           }
         },
-        child: const MaterialApp(
+        child: MaterialApp(
           title: 'SolipsisChat',
-          home: SolipsisChatHome(),
+          home: SolipsisChatHome(storage: storage),
         ));
   }
 }
