@@ -37,7 +37,7 @@ class FileStorage {
 
     // Write the file
     return file.writeAsString(
-      '${message.author.id}: [${currentTimestamp()}] ${message.text}\n',
+      '[${currentTimestamp()}|${message.author.id}]: ${message.text}\n',
       mode: FileMode.append,
     );
   }

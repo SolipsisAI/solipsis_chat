@@ -22,24 +22,24 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   int _page = 0;
   List<types.Message> _messages = [];
 
-  final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
-  final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
+  final _user = const types.User(id: '06c33e8be835473680f463f44b66666c');
+  final _bot = const types.User(id: '09778d0ffb944ac68d7296112805f3ad');
 
   final splitter = const LineSplitter();
 
   @override
   void initState() {
     super.initState();
+
+    // load notes
     widget.storage.readNotes().then((String value) {
       setState(() {
+        // split file contents into lines
         final textLines = splitter.convert(value);
 
         for (var i = 0; i < textLines.length; i++) {
-          _addMessage(types.TextMessage(
-            author: _user,
-            id: randomString(),
-            text: textLines[i],
-          ));
+          // add to messages list to load
+          _addMessage(convertToMessage(textLines[i]));
         }
       });
     });

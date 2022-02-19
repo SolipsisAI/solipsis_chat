@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:core';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
@@ -9,7 +11,7 @@ const int wordsPerMinute = 300;
 
 String randomString() {
   const uuid = Uuid();
-  return uuid.v4();
+  return uuid.v4().replaceAll('-', '');
 }
 
 Future<types.TextMessage> randomMessage(types.User user) async {
@@ -34,4 +36,18 @@ int messageDelay(types.TextMessage message) {
 
 int currentTimestamp() {
   return DateTime.now().millisecondsSinceEpoch;
+}
+
+types.TextMessage convertToMessage(String line) {
+  final regex = RegExp(r"^\[(.*?)\]:(.*)");
+  final match = regex.firstMatch(line);
+  final infoString = match!.group(1);
+  final text = match.group(2);
+  final info = infoString!.split('|');
+  final authorId = info[1];
+  return types.TextMessage(
+    id: infoString,
+    author: types.User(id: authorId),
+    text: text!,
+  );
 }
