@@ -36,6 +36,9 @@ class FileStorage {
     final file = await _localFile;
 
     // Write the file
-    return file.writeAsString('[${currentTimestamp()}] ${message.text}');
+    return file.writeAsString(
+      '[${currentTimestamp()}] ${message.text}',
+      mode: FileMode.append,
+    );
   }
 }
