@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 
 const String loremIpsumApiUrl =
     'https://litipsum.com/api/dr-jekyll-and-mr-hyde/1/json';
-const int wordsPerMinute = 100;
+const int wordsPerMinute = 300;
 
 String randomString() {
   const uuid = Uuid();
