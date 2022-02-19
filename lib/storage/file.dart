@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:path_provider/path_provider.dart';
 
-import 'utils.dart';
+import '../utils.dart';
 
 class FileStorage {
   Future<String> get _localPath async {

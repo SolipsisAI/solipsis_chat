@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'chat.dart';
-import 'storage.dart';
+import 'storage/file.dart';
 
 void main() {
   runApp(SolipsisChat(storage: FileStorage()));

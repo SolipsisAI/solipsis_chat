@@ -6,7 +6,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
 
-import 'storage.dart';
+import 'storage/file.dart';
 import 'utils.dart';
 
 class SolipsisChatHome extends StatefulWidget {
