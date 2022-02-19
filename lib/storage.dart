@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
-class CounterStorage {
+class FileStorage {
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
 

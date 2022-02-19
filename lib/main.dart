@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 import 'chat.dart';
-import 'store.dart';
+import 'storage.dart';
 
 void main() {
-  runApp(SolipsisChat(storage: CounterStorage()));
+  runApp(SolipsisChat(storage: FileStorage()));
 }
 
 class SolipsisChat extends StatelessWidget {
   const SolipsisChat({Key? key, required this.storage}) : super(key: key);
 
-  final CounterStorage storage;
+  final FileStorage storage;
 
   @override
   Widget build(BuildContext context) {
