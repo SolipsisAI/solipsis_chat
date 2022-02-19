@@ -20,7 +20,7 @@ Future<types.TextMessage> randomMessage(types.User user) async {
   final text = data[0];
   return types.TextMessage(
     author: user,
-    createdAt: DateTime.now().millisecondsSinceEpoch,
+    createdAt: currentTimestamp(),
     id: randomString(),
     text: text,
   );
@@ -30,4 +30,8 @@ int messageDelay(types.TextMessage message) {
   final List words = message.text.split(" ");
   final int wordCount = words.length;
   return (wordCount ~/ wordsPerMinute) * 60;
+}
+
+int currentTimestamp() {
+  return DateTime.now().millisecondsSinceEpoch;
 }

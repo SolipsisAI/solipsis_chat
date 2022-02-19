@@ -21,12 +21,22 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   bool _showTyping = false;
   int _page = 0;
   List<types.Message> _messages = [];
+
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
   @override
   void initState() {
     super.initState();
+    widget.storage.readNotes().then((String value) {
+      setState(() {
+        _addMessage(types.TextMessage(
+          author: _user,
+          id: randomString(),
+          text: value,
+        ));
+      });
+    });
   }
 
   Future<void> _handleEndReached() async {
@@ -61,9 +71,10 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
     _addMessage(message);
   }
 
-  void _addMessage(types.Message message) {
+  void _addMessage(types.TextMessage message) {
     setState(() {
       _messages.insert(0, message);
+      widget.storage.writeNote(message);
     });
     logger.log('data: $message');
   }
