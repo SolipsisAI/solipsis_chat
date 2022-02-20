@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive/hive.dart';
 
 import 'chat.dart';
 import 'storage/file.dart';
+import 'models/message.dart';
 
-void main() {
+const String messagesBoxName = "messages";
+
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter<Message>(MessageAdapter());
+  await Hive.openBox<Message>(messagesBoxName);
   runApp(SolipsisChat(storage: FileStorage()));
 }
 
