@@ -16,11 +16,12 @@ class MessageAdapter extends TypeAdapter<Message> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Message()
-      ..id = fields[0] as String
-      ..authorId = fields[1] as String
-      ..text = fields[2] as String
-      ..createdAt = fields[3] as int;
+    return Message(
+      fields[0] as String,
+      fields[1] as String,
+      fields[2] as String,
+      fields[3] as int,
+    );
   }
 
   @override
