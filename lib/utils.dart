@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:core';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
+import 'package:solipsis_chat/models/chat_message.dart';
 
 const String loremIpsumApiUrl =
     'https://litipsum.com/api/dr-jekyll-and-mr-hyde/1/json';
@@ -37,7 +39,7 @@ int currentTimestamp() {
   return DateTime.now().millisecondsSinceEpoch;
 }
 
-types.TextMessage convertToMessage(String line) {
+types.TextMessage convertLineToMessage(String line) {
   final regex = RegExp(r"^\[(.*?)\]:(.*)");
   final match = regex.firstMatch(line);
   final infoString = match!.group(1);
@@ -48,5 +50,13 @@ types.TextMessage convertToMessage(String line) {
     id: infoString,
     author: types.User(id: authorId),
     text: text!,
+  );
+}
+
+types.TextMessage convertToMessage(ChatMessage message) {
+  return types.TextMessage(
+    id: message.id,
+    author: types.User(id: message.authorId),
+    text: message.text,
   );
 }

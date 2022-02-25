@@ -34,18 +34,13 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   @override
   void initState() {
     super.initState();
-
-    // load notes
-    widget.storage.readNotes().then((String value) {
-      setState(() {
-        // split file contents into lines
-        final textLines = splitter.convert(value);
-
-        for (var i = 0; i < textLines.length; i++) {
-          // add to messages list to load
-          _addMessage(convertToMessage(textLines[i]));
-        }
-      });
+    setState(() {
+      List<ChatMessage> messagesList = messagesBox.values.toList();
+      ChatMessage m = messagesList[0];
+      _messages.insert(0, convertToMessage(m));
+      logger.log('inital: ${m.text}');
+      // messagesList.map((ChatMessage message) =>
+      //     _messages.insert(0, convertToMessage(message)));
     });
   }
 
