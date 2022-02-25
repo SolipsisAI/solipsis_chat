@@ -122,6 +122,7 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: Chat(
         messages: _messages,
         onSendPressed: _handleSendPressed,

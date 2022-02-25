@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'storage/file.dart';
 import 'models/chat_message.dart';
 
