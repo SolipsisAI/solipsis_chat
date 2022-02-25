@@ -5,6 +5,8 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:solipsis_chat/models/chat_message.dart';
 
 import 'storage/file.dart';
 import 'utils.dart';
@@ -26,6 +28,8 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   final _bot = const types.User(id: '09778d0ffb944ac68d7296112805f3ad');
 
   final splitter = const LineSplitter();
+
+  Box<ChatMessage> messagesBox = Hive.box<ChatMessage>("messages");
 
   @override
   void initState() {
@@ -81,6 +85,8 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
     setState(() {
       _messages.insert(0, message);
       widget.storage.writeNote(message);
+      messagesBox.add(ChatMessage(
+          message.id, message.author.id, message.text, currentTimestamp()));
     });
     logger.log('data: $message');
   }
