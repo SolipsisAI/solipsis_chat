@@ -121,19 +121,16 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: Chat(
-          messages: _messages,
-          onSendPressed: _handleSendPressed,
-          user: _user,
-          bubbleBuilder: _bubbleBuilder,
-          onEndReached: _handleEndReached,
-          showTyping: _showTyping,
-          showUserAvatars: true,
-          showUserNames: true,
-        ),
+    return SafeArea(
+      child: Chat(
+        messages: _messages,
+        onSendPressed: _handleSendPressed,
+        user: _user,
+        bubbleBuilder: _bubbleBuilder,
+        onEndReached: _handleEndReached,
+        showTyping: _showTyping,
+        showUserAvatars: true,
+        showUserNames: true,
       ),
     );
   }
