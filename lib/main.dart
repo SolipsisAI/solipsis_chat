@@ -11,13 +11,16 @@ void main() async {
   final dir = await getApplicationSupportDirectory();
   final Isar _isar = await Isar.open(
       schemas: [ChatMessageSchema, ChatUserSchema], directory: dir.path);
-  runApp(SolipsisChat(isar: _isar));
+  final chatMessages = await _isar.chatMessages.where().findAll();
+  runApp(SolipsisChat(isar: _isar, chatMessages: chatMessages));
 }
 
 class SolipsisChat extends StatelessWidget {
-  const SolipsisChat({Key? key, required this.isar}) : super(key: key);
+  const SolipsisChat({Key? key, required this.isar, required this.chatMessages})
+      : super(key: key);
 
   final Isar isar;
+  final List<ChatMessage> chatMessages;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +34,7 @@ class SolipsisChat extends StatelessWidget {
         },
         child: MaterialApp(
           title: 'SolipsisChat',
-          home: SolipsisChatHome(isar: isar),
+          home: SolipsisChatHome(isar: isar, chatMessages: chatMessages),
         ));
   }
 }

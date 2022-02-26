@@ -12,9 +12,12 @@ import 'models/chat_user.dart';
 import 'utils.dart';
 
 class SolipsisChatHome extends StatefulWidget {
-  const SolipsisChatHome({Key? key, required this.isar}) : super(key: key);
+  const SolipsisChatHome(
+      {Key? key, required this.isar, required this.chatMessages})
+      : super(key: key);
 
   final Isar isar;
+  final List<ChatMessage> chatMessages;
 
   @override
   _SolipsisChatHomeState createState() => _SolipsisChatHomeState();
@@ -32,19 +35,29 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   @override
   void initState() {
     super.initState();
+    for (var i = 0; i < widget.chatMessages.length; i++) {
+      logger.log(widget.chatMessages[i].text);
+    }
     setState(() {
-      loadMessages();
+      _messages.insert(
+          0,
+          types.TextMessage(
+              author: types.User(id: widget.chatMessages[0].userUuid),
+              id: widget.chatMessages[0].uuid,
+              createdAt: widget.chatMessages[0].createdAt,
+              text: widget.chatMessages[0].text));
     });
-  }
-
-  Future<void> loadMessages() async {
-    final messages = await widget.isar.chatMessages.where().findAll();
-    logger.log('loadMessages: $messages');
-    messages.map((e) => _addMessage(types.TextMessage(
-        author: types.User(id: e.userUuid),
-        text: e.text,
-        createdAt: e.createdAt,
-        id: e.uuid)));
+    // setState(() {
+    //   widget.chatMessages.map((e) => {
+    //         _messages.insert(
+    //             0,
+    //             types.TextMessage(
+    //                 author: _user,
+    //                 text: e.text,
+    //                 createdAt: e.createdAt,
+    //                 id: e.uuid))
+    //       });
+    // });
   }
 
   Future<void> _handleEndReached() async {
@@ -99,7 +112,7 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   void _handleSendPressed(types.PartialText message) {
     final textMessage = types.TextMessage(
       author: _user,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
+      createdAt: currentTimestamp(),
       id: randomString(),
       text: message.text,
     );
