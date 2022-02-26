@@ -35,12 +35,16 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   void initState() {
     super.initState();
     setState(() {
-      List<ChatMessage> messagesList = messagesBox.values.toList();
-      int messagesCount = messagesList.length;
-      for (var i = 0; i < messagesCount; i++) {
-        _messages.insert(0, convertToMessage(messagesList[i]));
-      }
+      loadMessages();
     });
+  }
+
+  void loadMessages() {
+    List<ChatMessage> messagesList = messagesBox.values.toList();
+    int messagesCount = messagesList.length;
+    for (var i = 0; i < messagesCount; i++) {
+      _messages.insert(0, convertToMessage(messagesList[i]));
+    }
   }
 
   Future<void> _handleEndReached() async {
