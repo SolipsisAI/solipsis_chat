@@ -36,17 +36,16 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   void initState() {
     super.initState();
     for (var i = 0; i < widget.chatMessages.length; i++) {
-      logger.log(widget.chatMessages[i].text);
+      setState(() {
+        _messages.insert(
+            0,
+            types.TextMessage(
+                author: types.User(id: widget.chatMessages[i].userUuid),
+                id: widget.chatMessages[i].uuid,
+                createdAt: widget.chatMessages[i].createdAt,
+                text: widget.chatMessages[i].text));
+      });
     }
-    setState(() {
-      _messages.insert(
-          0,
-          types.TextMessage(
-              author: types.User(id: widget.chatMessages[0].userUuid),
-              id: widget.chatMessages[0].uuid,
-              createdAt: widget.chatMessages[0].createdAt,
-              text: widget.chatMessages[0].text));
-    });
     // setState(() {
     //   widget.chatMessages.map((e) => {
     //         _messages.insert(
