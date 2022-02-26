@@ -46,17 +46,6 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
                 text: widget.chatMessages[i].text));
       });
     }
-    // setState(() {
-    //   widget.chatMessages.map((e) => {
-    //         _messages.insert(
-    //             0,
-    //             types.TextMessage(
-    //                 author: _user,
-    //                 text: e.text,
-    //                 createdAt: e.createdAt,
-    //                 id: e.uuid))
-    //       });
-    // });
   }
 
   Future<void> _handleEndReached() async {
