@@ -13,4 +13,5 @@ class ChatUser {
   late String firstName;
   late String lastName;
   late String imageUrl;
+  late String uuid;
 }

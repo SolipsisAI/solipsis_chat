@@ -17,7 +17,7 @@ extension GetChatUserCollection on Isar {
 final ChatUserSchema = CollectionSchema(
   name: 'ChatUser',
   schema:
-      '{"name":"ChatUser","idName":"id","properties":[{"name":"createdAt","type":"Long"},{"name":"firstName","type":"String"},{"name":"imageUrl","type":"String"},{"name":"lastName","type":"String"},{"name":"nick","type":"String"},{"name":"updatedAt","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"ChatUser","idName":"id","properties":[{"name":"createdAt","type":"Long"},{"name":"firstName","type":"String"},{"name":"imageUrl","type":"String"},{"name":"lastName","type":"String"},{"name":"nick","type":"String"},{"name":"updatedAt","type":"Long"},{"name":"uuid","type":"String"}],"indexes":[],"links":[]}',
   nativeAdapter: const _ChatUserNativeAdapter(),
   webAdapter: const _ChatUserWebAdapter(),
   idName: 'id',
@@ -27,7 +27,8 @@ final ChatUserSchema = CollectionSchema(
     'imageUrl': 2,
     'lastName': 3,
     'nick': 4,
-    'updatedAt': 5
+    'updatedAt': 5,
+    'uuid': 6
   },
   listProperties: {},
   indexIds: {},
@@ -60,6 +61,7 @@ class _ChatUserWebAdapter extends IsarWebTypeAdapter<ChatUser> {
     IsarNative.jsObjectSet(jsObj, 'lastName', object.lastName);
     IsarNative.jsObjectSet(jsObj, 'nick', object.nick);
     IsarNative.jsObjectSet(jsObj, 'updatedAt', object.updatedAt);
+    IsarNative.jsObjectSet(jsObj, 'uuid', object.uuid);
     return jsObj;
   }
 
@@ -75,6 +77,7 @@ class _ChatUserWebAdapter extends IsarWebTypeAdapter<ChatUser> {
     object.nick = IsarNative.jsObjectGet(jsObj, 'nick') ?? '';
     object.updatedAt =
         IsarNative.jsObjectGet(jsObj, 'updatedAt') ?? double.negativeInfinity;
+    object.uuid = IsarNative.jsObjectGet(jsObj, 'uuid') ?? '';
     return object;
   }
 
@@ -97,6 +100,8 @@ class _ChatUserWebAdapter extends IsarWebTypeAdapter<ChatUser> {
       case 'updatedAt':
         return (IsarNative.jsObjectGet(jsObj, 'updatedAt') ??
             double.negativeInfinity) as P;
+      case 'uuid':
+        return (IsarNative.jsObjectGet(jsObj, 'uuid') ?? '') as P;
       default:
         throw 'Illegal propertyName';
     }
@@ -129,6 +134,9 @@ class _ChatUserNativeAdapter extends IsarNativeTypeAdapter<ChatUser> {
     dynamicSize += (_nick.length) as int;
     final value5 = object.updatedAt;
     final _updatedAt = value5;
+    final value6 = object.uuid;
+    final _uuid = IsarBinaryWriter.utf8Encoder.convert(value6);
+    dynamicSize += (_uuid.length) as int;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -141,6 +149,7 @@ class _ChatUserNativeAdapter extends IsarNativeTypeAdapter<ChatUser> {
     writer.writeBytes(offsets[3], _lastName);
     writer.writeBytes(offsets[4], _nick);
     writer.writeLong(offsets[5], _updatedAt);
+    writer.writeBytes(offsets[6], _uuid);
   }
 
   @override
@@ -154,6 +163,7 @@ class _ChatUserNativeAdapter extends IsarNativeTypeAdapter<ChatUser> {
     object.lastName = reader.readString(offsets[3]);
     object.nick = reader.readString(offsets[4]);
     object.updatedAt = reader.readLong(offsets[5]);
+    object.uuid = reader.readString(offsets[6]);
     return object;
   }
 
@@ -175,6 +185,8 @@ class _ChatUserNativeAdapter extends IsarNativeTypeAdapter<ChatUser> {
         return (reader.readString(offset)) as P;
       case 5:
         return (reader.readLong(offset)) as P;
+      case 6:
+        return (reader.readString(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
     }
@@ -828,6 +840,109 @@ extension ChatUserQueryFilter
       includeUpper: includeUpper,
     ));
   }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> uuidEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'uuid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> uuidGreaterThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'uuid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> uuidLessThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'uuid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> uuidBetween(
+    String lower,
+    String upper, {
+    bool caseSensitive = true,
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'uuid',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> uuidStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'uuid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> uuidEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'uuid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> uuidContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'uuid',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> uuidMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'uuid',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
+  }
 }
 
 extension ChatUserQueryLinks
@@ -890,6 +1005,14 @@ extension ChatUserQueryWhereSortBy
   QueryBuilder<ChatUser, ChatUser, QAfterSortBy> sortByUpdatedAtDesc() {
     return addSortByInternal('updatedAt', Sort.desc);
   }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterSortBy> sortByUuid() {
+    return addSortByInternal('uuid', Sort.asc);
+  }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterSortBy> sortByUuidDesc() {
+    return addSortByInternal('uuid', Sort.desc);
+  }
 }
 
 extension ChatUserQueryWhereSortThenBy
@@ -949,6 +1072,14 @@ extension ChatUserQueryWhereSortThenBy
   QueryBuilder<ChatUser, ChatUser, QAfterSortBy> thenByUpdatedAtDesc() {
     return addSortByInternal('updatedAt', Sort.desc);
   }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterSortBy> thenByUuid() {
+    return addSortByInternal('uuid', Sort.asc);
+  }
+
+  QueryBuilder<ChatUser, ChatUser, QAfterSortBy> thenByUuidDesc() {
+    return addSortByInternal('uuid', Sort.desc);
+  }
 }
 
 extension ChatUserQueryWhereDistinct
@@ -984,6 +1115,11 @@ extension ChatUserQueryWhereDistinct
   QueryBuilder<ChatUser, ChatUser, QDistinct> distinctByUpdatedAt() {
     return addDistinctByInternal('updatedAt');
   }
+
+  QueryBuilder<ChatUser, ChatUser, QDistinct> distinctByUuid(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('uuid', caseSensitive: caseSensitive);
+  }
 }
 
 extension ChatUserQueryProperty
@@ -1014,5 +1150,9 @@ extension ChatUserQueryProperty
 
   QueryBuilder<ChatUser, int, QQueryOperations> updatedAtProperty() {
     return addPropertyNameInternal('updatedAt');
+  }
+
+  QueryBuilder<ChatUser, String, QQueryOperations> uuidProperty() {
+    return addPropertyNameInternal('uuid');
   }
 }

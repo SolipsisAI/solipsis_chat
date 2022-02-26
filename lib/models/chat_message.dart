@@ -7,10 +7,8 @@ class ChatMessage {
   @Id()
   int? id;
 
-  late int userId;
   late int createdAt;
-  late int updatedAt;
   late String text;
-  late String roomId;
   late String uuid;
+  late String userUuid;
 }
