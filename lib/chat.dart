@@ -5,10 +5,19 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
+import 'package:isar/isar.dart';
+
+import 'models/chat_message.dart';
+import 'models/chat_user.dart';
 import 'utils.dart';
 
 class SolipsisChatHome extends StatefulWidget {
-  const SolipsisChatHome({Key? key}) : super(key: key);
+  const SolipsisChatHome(
+      {Key? key, required this.isar, required this.chatMessages})
+      : super(key: key);
+
+  final Isar isar;
+  final List<ChatMessage> chatMessages;
 
   @override
   _SolipsisChatHomeState createState() => _SolipsisChatHomeState();
@@ -17,13 +26,26 @@ class SolipsisChatHome extends StatefulWidget {
 class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   bool _showTyping = false;
   int _page = 0;
+
   List<types.Message> _messages = [];
+
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
   @override
   void initState() {
     super.initState();
+    for (var i = 0; i < widget.chatMessages.length; i++) {
+      setState(() {
+        _messages.insert(
+            0,
+            types.TextMessage(
+                author: types.User(id: widget.chatMessages[i].userUuid),
+                id: widget.chatMessages[i].uuid,
+                createdAt: widget.chatMessages[i].createdAt,
+                text: widget.chatMessages[i].text));
+      });
+    }
   }
 
   Future<void> _handleEndReached() async {
@@ -58,7 +80,17 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
     _addMessage(message);
   }
 
-  void _addMessage(types.Message message) {
+  void _addMessage(types.TextMessage message) async {
+    final newMessage = ChatMessage()
+      ..createdAt = message.createdAt!
+      ..userUuid = message.author.id
+      ..uuid = message.id
+      ..text = message.text;
+
+    await widget.isar.writeTxn((isar) async {
+      await isar.chatMessages.put(newMessage);
+    });
+
     setState(() {
       _messages.insert(0, message);
     });
@@ -68,7 +100,7 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   void _handleSendPressed(types.PartialText message) {
     final textMessage = types.TextMessage(
       author: _user,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
+      createdAt: currentTimestamp(),
       id: randomString(),
       text: message.text,
     );

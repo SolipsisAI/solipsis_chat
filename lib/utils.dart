@@ -31,3 +31,7 @@ int messageDelay(types.TextMessage message) {
   final int wordCount = words.length;
   return (wordCount ~/ wordsPerMinute) * 60;
 }
+
+int currentTimestamp() {
+  return DateTime.now().millisecondsSinceEpoch;
+}
