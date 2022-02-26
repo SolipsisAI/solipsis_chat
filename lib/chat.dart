@@ -25,7 +25,6 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   int _page = 0;
 
   List<types.Message> _messages = [];
-  //List<ChatMessage> messages = [];
 
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
@@ -33,9 +32,19 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   @override
   void initState() {
     super.initState();
-    // setState(() {
-    //   messages = widget.isar.chatMessages as List<ChatMessage>;
-    // });
+    setState(() {
+      loadMessages();
+    });
+  }
+
+  Future<void> loadMessages() async {
+    final messages = await widget.isar.chatMessages.where().findAll();
+    logger.log('loadMessages: $messages');
+    messages.map((e) => _addMessage(types.TextMessage(
+        author: types.User(id: e.userUuid),
+        text: e.text,
+        createdAt: e.createdAt,
+        id: e.uuid)));
   }
 
   Future<void> _handleEndReached() async {
