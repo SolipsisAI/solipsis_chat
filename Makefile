@@ -1,4 +1,4 @@
-.PHONY: clean macos ios
+.PHONY: clean macos ios simulator devices install_deps
 
 install_deps:
 	@flutter pub get
