@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'chat.dart';
 import 'models/chat_message.dart';
 import 'models/chat_user.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final dir = await getApplicationSupportDirectory();
   final Isar _isar = await Isar.open(
-      schemas: [ChatMessageSchema, ChatUserSchema], directory: 'data');
+      schemas: [ChatMessageSchema, ChatUserSchema], directory: dir.path);
   runApp(SolipsisChat(isar: _isar));
 }
 
