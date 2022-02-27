@@ -1,7 +1,9 @@
 import 'package:flutter/services.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
 
 class Classifier {
   final _vocabFile = 'text_classification_vocab.txt';
+  final _modelFile = 'text_classification.tflite';
 
   // Maximum length of sentence
   final int _sentenceLen = 256;
@@ -11,9 +13,17 @@ class Classifier {
   final String unk = '<UNKNOWN>';
 
   late Map<String, int> _dict;
+  late Interpreter _interpreter;
 
   Classifier() {
+    _loadModel();
     _loadDictionary();
+  }
+
+  void _loadModel() async {
+    // Creating the interpreter using Interpreter.fromAsset
+    _interpreter = await Interpreter.fromAsset(_modelFile);
+    print('Interpreter loaded successfully');
   }
 
   void _loadDictionary() async {
