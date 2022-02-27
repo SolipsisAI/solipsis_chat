@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BAZEL_VERSION=3.7.2
-TF_VERSION=2.5
+TF_VERSION=2.8
 
 setup_linux () {
     sudo apt -y install curl gnupg
