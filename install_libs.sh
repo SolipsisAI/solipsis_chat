@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BAZEL_VERSION=4.1.0
+BAZEL_VERSION=3.7.2
 TF_VERSION=2.5
 
 setup_linux () {
