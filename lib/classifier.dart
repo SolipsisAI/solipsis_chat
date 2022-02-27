@@ -16,6 +16,7 @@ class Classifier {
   late Interpreter _interpreter;
 
   Classifier() {
+    // Load model when the classifier is initialized.
     _loadModel();
     _loadDictionary();
   }
@@ -36,6 +37,21 @@ class Classifier {
     }
     _dict = dict;
     print('Dictionary loaded successfully');
+  }
+
+  List<double> classify(String rawText) {
+    // tokenizeInputText returns List<List<double>>
+    // of shape [1, 256].
+    List<List<double>> input = tokenizeInputText(rawText);
+
+    // output of shape [1,2].
+    var output = List<double>.filled(2, 0).reshape([1, 2]);
+
+    // The run method will run inference and
+    // store the resulting values in output.
+    _interpreter.run(input, output);
+
+    return [output[0][0], output[0][1]];
   }
 
   List<List<double>> tokenizeInputText(String text) {
