@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
 
 import 'models/chat_message.dart';
-import 'models/chat_user.dart';
+import 'classifier.dart';
 import 'utils.dart';
 
 class SolipsisChatHome extends StatefulWidget {
@@ -32,9 +32,12 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
+  late Classifier _classifier;
+
   @override
   void initState() {
     super.initState();
+    _classifier = Classifier();
     for (var i = 0; i < widget.chatMessages.length; i++) {
       setState(() {
         _messages.insert(
