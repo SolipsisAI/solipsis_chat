@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
+PROJECT_DIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 BAZEL_VERSION=3.7.2
 TF_VERSION=2.8
+
+BASE_LIB_FILENAME="libtensorflowlite_c"
+
 
 setup_linux () {
     sudo apt -y install curl gnupg
@@ -21,14 +25,25 @@ build_binaries () {
     bazel build -c opt //tensorflow/lite/c:tensorflowlite_c --define tflite_with_xnnpack=true
 }
 
+copy_to_project () {
+    mkdir -p $PROJECT_DIR/blobs
+    cp $PROJECT_DIR/../tensorflow/bazel-bin/tensorflow/lite/c/$src_filename $PROJECT_DIR/blobs/$dest_filename
+}
+
 unamestr=$(uname)
 if [[ "$unamestr" == 'Linux' ]]; then
     echo "Setting up on Linux"
+    src_filename="${BASE_LIB_FILENAME}.so"
+    dest_filename="${BASE_LIB_FILENAME}-linux.so"
     setup_linux
-    build_binaries
 elif [[ "$unamestr" == 'Darwin' ]]; then
     echo "macos"
+    src_filename="${BASE_LIB_FILENAME}.dylib"
+    dest_filename="${BASE_LIB_FILENAME}-mac.dylib"
 else
     echo "Unsupported"
     exit 1
 fi
+
+build_binaries
+copy_to_project
