@@ -14,6 +14,12 @@ git clone git@github.com:SolipsisAI/solipsis_chat.git
 # Get dependencies
 cd solipsis_chat
 flutter pub get
+
+# Install libraries for desktop
+bash ./install_libs.sh
+
+# Download model file and vocab text
+bash ./download_assets.sh
 ```
 
 ## Running app

@@ -1,6 +1,8 @@
 .PHONY: clean macos ios simulator devices install_deps
 
-install_deps:
+install:
+	@bash ./install_libs.sh
+	@bash ./download_assets.sh
 	@flutter pub get
 
 simulator:
@@ -11,6 +13,9 @@ ios: simulator
 
 macos:
 	@flutter run -d macos
+
+linux:
+	@flutter run -d linux
 
 devices:
 	@flutter devices
