@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 PROJECT_DIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 TF_DIR=${PROJECT_DIR}/../tensorflow
+BLOBS_DIR=$HOME/Library/Containers/ai.solipsis.Solipsis/Data/blobs
 
 BAZEL_VERSION=3.7.2
 TF_VERSION=2.8
@@ -60,8 +61,8 @@ build_ios_binaries () {
 }
 
 copy_to_project () {
-    mkdir -p $PROJECT_DIR/blobs
-    cp $PROJECT_DIR/../tensorflow/bazel-bin/tensorflow/lite/c/$src_filename $PROJECT_DIR/blobs/$dest_filename
+    mkdir -p $BLOBS_DIR
+    cp $TF_DIR/bazel-bin/tensorflow/lite/c/$src_filename $BLOBS_DIR/$dest_filename
 }
 
 unamestr=$(uname)
@@ -73,13 +74,12 @@ if [[ "$unamestr" == 'Linux' ]]; then
 elif [[ "$unamestr" == 'Darwin' ]]; then
     echo "macos"
     src_filename="${BASE_LIB_FILENAME}.dylib"
-    dest_filename="${BASE_LIB_FILENAME}-mac.dylib"
-    build_binaries
-    build_ios_binaries
+    dest_filename="${BASE_LIB_FILENAME}-mac.so" # the tflite_flutter plugin looks for a *.so file
+    #build_ios_binaries
 else
     echo "Unsupported"
     exit 1
 fi
 
-build_binaries
+#build_binaries
 copy_to_project
