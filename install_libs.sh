@@ -75,11 +75,11 @@ elif [[ "$unamestr" == 'Darwin' ]]; then
     echo "macos"
     src_filename="${BASE_LIB_FILENAME}.dylib"
     dest_filename="${BASE_LIB_FILENAME}-mac.so" # the tflite_flutter plugin looks for a *.so file
-    #build_ios_binaries
+    build_ios_binaries
 else
     echo "Unsupported"
     exit 1
 fi
 
-#build_binaries
+build_binaries
 copy_to_project
