@@ -40,7 +40,8 @@ build_binaries () {
     git clone https://github.com/tensorflow/tensorflow.git
     cd $TF_DIR
     git checkout r$TF_VERSION
-    bazel build -c opt //tensorflow/lite/c:tensorflowlite_c --define tflite_with_xnnpack=true
+    # Must be built on x86_64
+    arch -x86_64 bazel build -c opt //tensorflow/lite/c:tensorflowlite_c --define tflite_with_xnnpack=true
 }
 
 build_ios_binaries () {
@@ -75,7 +76,7 @@ elif [[ "$unamestr" == 'Darwin' ]]; then
     echo "macos"
     src_filename="${BASE_LIB_FILENAME}.dylib"
     dest_filename="${BASE_LIB_FILENAME}-mac.so" # the tflite_flutter plugin looks for a *.so file
-    build_ios_binaries
+    # build_ios_binaries
 else
     echo "Unsupported"
     exit 1
