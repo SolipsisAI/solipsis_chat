@@ -39,7 +39,7 @@ class Classifier {
     print('Dictionary loaded successfully');
   }
 
-  List<double> classify(String rawText) {
+  int classify(String rawText) {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
     List<List<double>> input = tokenizeInputText(rawText);
@@ -51,7 +51,17 @@ class Classifier {
     // store the resulting values in output.
     _interpreter.run(input, output);
 
-    return [output[0][0], output[0][1]];
+    var result = 0;
+
+    // If value of first element in output is greater than second,
+    // then sentece is negative
+    if ((output[0][0] as double) > (output[0][1] as double)) {
+      result = 0;
+    } else {
+      result = 1;
+    }
+
+    return result;
   }
 
   List<List<double>> tokenizeInputText(String text) {

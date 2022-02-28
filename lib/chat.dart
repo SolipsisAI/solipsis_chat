@@ -80,11 +80,19 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
 
     final sentiment = _classifier.classify(text);
 
+    var responseText = "";
+
+    if (sentiment == 0) {
+      responseText = "You are being negative";
+    } else {
+      responseText = "You are being positive";
+    }
+
     final message = types.TextMessage(
         author: _bot,
         createdAt: currentTimestamp(),
         id: randomString(),
-        text: "Result: $sentiment");
+        text: responseText);
 
     await Future.delayed(
         Duration(seconds: messageDelay(message)), () => _showTyping = false);
