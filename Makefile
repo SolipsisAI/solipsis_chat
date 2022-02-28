@@ -14,6 +14,9 @@ ios: simulator
 macos:
 	@flutter run -d macos
 
+linux:
+	@flutter run -d linux
+
 devices:
 	@flutter devices
 
