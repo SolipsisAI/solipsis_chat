@@ -75,11 +75,20 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
     });
   }
 
-  Future<void> _handleBotResponse() async {
+  Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
-    final message = await randomMessage(_bot);
+
+    final sentiment = _classifier.classify(text);
+
+    final message = types.TextMessage(
+        author: _bot,
+        createdAt: currentTimestamp(),
+        id: randomString(),
+        text: "Result: $sentiment");
+
     await Future.delayed(
         Duration(seconds: messageDelay(message)), () => _showTyping = false);
+
     _addMessage(message);
   }
 
@@ -109,7 +118,7 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
     );
 
     _addMessage(textMessage);
-    _handleBotResponse();
+    _handleBotResponse(message.text);
   }
 
   Widget _bubbleBuilder(
