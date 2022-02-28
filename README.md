@@ -17,6 +17,9 @@ flutter pub get
 
 # Install libraries for desktop
 bash ./install_libs.sh
+
+# Download model file and vocab text
+bash ./download_assets.sh
 ```
 
 ## Running app
