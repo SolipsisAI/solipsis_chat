@@ -2,6 +2,7 @@
 PROJECT_DIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 TF_DIR=${PROJECT_DIR}/../tensorflow
 BLOBS_DIR=$HOME/Library/Containers/ai.solipsis.Solipsis/Data/blobs
+TFLITE_IOS_DIR=$PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios
 
 BAZEL_VERSION=3.7.2
 TF_VERSION=2.8
@@ -36,9 +37,15 @@ setup_linux () {
 
 build_binaries () {
     setup_python
+
     cd $PROJECT_DIR/..
-    git clone https://github.com/tensorflow/tensorflow.git
+
+    if [ ! -d "$TF_DIR" ]; then
+        git clone https://github.com/tensorflow/tensorflow.git
+    fi
+
     cd $TF_DIR
+
     git checkout r$TF_VERSION
     # Must be built on x86_64
     arch -x86_64 bazel build -c opt //tensorflow/lite/c:tensorflowlite_c --define tflite_with_xnnpack=true
@@ -46,9 +53,13 @@ build_binaries () {
 
 build_ios_binaries () {
     setup_python
+
     cd $PROJECT_DIR/..
 
-    git clone https://github.com/tensorflow/tensorflow.git
+    if [ ! -d "$TF_DIR" ]; then
+        git clone https://github.com/tensorflow/tensorflow.git
+    fi
+
     cd $TF_DIR
 
     bazel clean
@@ -56,9 +67,16 @@ build_ios_binaries () {
     bazel build --config=ios_fat -c opt \
         //tensorflow/lite/ios:TensorFlowLiteC_framework
 
+    unzip $TF_DIR/bazel-bin/tensorflow/lite/ios/TensorFlowLiteC_framework.zip \
+        -d $TFLITE_IOS_DIR
+    
+    # This is absolutely necessary
+    cd $PROJECT_DIR
+    flutter clean
     flutter pub get
-    unzip bazel-bin/tensorflow/lite/ios/TensorFlowLiteC_framework.zip \
-	    -d ~/.pub-cache/hosted/pub.dartlang.org/tflite_flutter-0.9.0/ios/
+    cd $PROJECT_DIR/ios 
+    pod install
+    cd $PROJECT_DIR
 }
 
 copy_to_project () {
@@ -76,11 +94,23 @@ elif [[ "$unamestr" == 'Darwin' ]]; then
     echo "macos"
     src_filename="${BASE_LIB_FILENAME}.dylib"
     dest_filename="${BASE_LIB_FILENAME}-mac.so" # the tflite_flutter plugin looks for a *.so file
-    # build_ios_binaries
 else
     echo "Unsupported"
     exit 1
 fi
 
-build_binaries
-copy_to_project
+if [[ "$INCLUDE_IOS" == 'True' || "$INCLUDE_IOS" == 'true' ]]; then
+    if [ ! -d "$PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios/TensorFlowLiteC.framework"]; then
+        echo "[INFO] Building iOS dependencies"
+        build_ios_binaries
+    else
+        echo "[SKIP] TensorFlowLiteC.framework already built; skipping"
+    fi
+fi
+
+if [ ! -d  "$BLOBS_DIR/$dest_filename" ]; then
+    echo "[INFO] Building macOS dependencies"
+    build_binaries
+    copy_to_project
+    echo "[SUCCESS] $dest_filename copied to $BLOBS_DIR"
+fi
