@@ -4,6 +4,10 @@ This is the Flutter app for Solipsis.
 
 # Development
 
+## Pre-requisites
+
+You need `bazel 4.2.1`.
+
 ## Setup
 
 ```shell
