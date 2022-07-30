@@ -4,8 +4,8 @@ TF_DIR=${PROJECT_DIR}/../tensorflow
 BLOBS_DIR=$HOME/Library/Containers/ai.solipsis.Solipsis/Data/blobs
 TFLITE_IOS_DIR=$PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios
 
-BAZEL_VERSION=3.7.2
-TF_VERSION=2.8
+BAZEL_VERSION=5.0.0
+TF_VERSION=2.9
 
 BASE_LIB_FILENAME="libtensorflowlite_c"
 
@@ -36,8 +36,6 @@ setup_linux () {
 }
 
 build_binaries () {
-    setup_python
-
     cd $PROJECT_DIR/..
 
     if [ ! -d "$TF_DIR" ]; then
@@ -52,8 +50,6 @@ build_binaries () {
 }
 
 build_ios_binaries () {
-    setup_python
-
     cd $PROJECT_DIR/..
 
     if [ ! -d "$TF_DIR" ]; then
@@ -99,18 +95,10 @@ else
     exit 1
 fi
 
-if [[ "$INCLUDE_IOS" == 'True' || "$INCLUDE_IOS" == 'true' ]]; then
-    if [ ! -d "$PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios/TensorFlowLiteC.framework"]; then
-        echo "[INFO] Building iOS dependencies"
-        build_ios_binaries
-    else
-        echo "[SKIP] TensorFlowLiteC.framework already built; skipping"
-    fi
-fi
-
 if [ ! -d  "$BLOBS_DIR/$dest_filename" ]; then
     echo "[INFO] Building macOS dependencies"
-    build_binaries
-    copy_to_project
+    # build_binaries
+    # copy_to_project
+    build_ios_binaries
     echo "[SUCCESS] $dest_filename copied to $BLOBS_DIR"
 fi
