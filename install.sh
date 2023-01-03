@@ -5,7 +5,7 @@ cd "$(dirname "$(readlink -f "$0")")"
 # Available versions
 # 2.5, 2.4.1
 
-TF_VERSION=2.5
+TF_VERSION=2.9.0
 URL="https://github.com/am15h/tflite_flutter_plugin/releases/download/"
 TAG="tf_$TF_VERSION"
 

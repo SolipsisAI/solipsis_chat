@@ -4,8 +4,8 @@ TF_DIR=${PROJECT_DIR}/../tensorflow
 BLOBS_DIR=$HOME/Library/Containers/ai.solipsis.Solipsis/Data/blobs
 TFLITE_IOS_DIR=$PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios
 
-BAZEL_VERSION=3.7.2
-TF_VERSION=2.8
+BAZEL_VERSION=5.0.0
+TF_VERSION=2.9
 
 BASE_LIB_FILENAME="libtensorflowlite_c"
 
