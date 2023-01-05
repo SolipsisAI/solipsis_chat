@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
@@ -11,6 +12,7 @@ class Classifier {
   final String start = '[CLS]';
   final String pad = '[PAD]';
   final String unk = '[UNK]';
+  final String sep = '[SEP]';
 
   late Map<String, int> _dict;
   late Interpreter _interpreter;
@@ -44,14 +46,21 @@ class Classifier {
     // of shape [1, 256].
     List<List<int>> input = tokenizeInputText(rawText);
 
-    // output of shape [1,2].
+    // output of shape [1,6]
+    // example: [[-1.434808373451233, -0.602688729763031, 4.8783135414123535, -1.720102071762085, -0.9065110087394714, -1.056220293045044]]
     var output = List<double>.filled(6, 0).reshape([1, 6]);
 
     // The run method will run inference and
     // store the resulting values in output.
     _interpreter.run(input, output);
 
-    print(output);
+    // Compute the softmax
+    //var expList = List<double>.filled(6, 0).reshape([1, 6]);
+    //print(expList);
+    var expList = List<double>.filled(6, 0).reshape([1, 6]);
+    for (var i=0; i < output[0].length; i++) {
+      print(exp(output[0][i]));
+    }
 
     return output;
   }
@@ -77,6 +86,9 @@ class Classifier {
           ? _dict[tok.toLowerCase()]!
           : _dict[unk]!;
     }
+
+    // EOS
+    vec[index++] = _dict[sep]!;
 
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
     print(vec);
