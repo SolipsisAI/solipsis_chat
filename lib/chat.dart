@@ -78,15 +78,8 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
 
-    final sentiment = _classifier.classify(text);
-
-    var responseText = "";
-
-    if (sentiment == 0) {
-      responseText = "You are being negative";
-    } else {
-      responseText = "You are being positive";
-    }
+    final label = _classifier.classify(text);
+    final responseText = "The emotion is: $label";
 
     final message = types.TextMessage(
         author: _bot,

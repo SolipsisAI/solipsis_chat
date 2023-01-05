@@ -1,6 +1,6 @@
-import 'package:ml_linalg/linalg.dart';
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
+import 'utils.dart';
 
 class Classifier {
   final _vocabFile = 'text_classification_vocab.bert.txt';
@@ -16,6 +16,15 @@ class Classifier {
 
   late Map<String, int> _dict;
   late Interpreter _interpreter;
+
+  final List<String> labels = [
+    "sadness",
+    "joy",
+    "love",
+    "anger",
+    "fear",
+    "surprise"
+  ];
 
   Classifier() {
     // Load model when the classifier is initialized.
@@ -41,7 +50,7 @@ class Classifier {
     print('Dictionary loaded successfully');
   }
 
-  List<dynamic> classify(String rawText) {
+  String classify(String rawText) {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
     List<List<int>> input = tokenizeInputText(rawText);
@@ -55,14 +64,9 @@ class Classifier {
     _interpreter.run(input, output);
 
     // Compute the softmax
-    final vector1 = Vector.fromList(output[0]);
-    final expVec = vector1.exp();
-    print(expVec);
-    final sum = expVec.toList().reduce((a, b) => a + b);
-    final result = expVec.scalarDiv(sum);
-    print(result);
-
-    return output;
+    final result = softmax(output[0]).toList();
+    final labelIndex = argMax(result);
+    return labels[labelIndex];
   }
 
   List<List<int>> tokenizeInputText(String text) {
