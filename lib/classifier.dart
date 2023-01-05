@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'package:ml_linalg/linalg.dart';
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
@@ -55,12 +55,12 @@ class Classifier {
     _interpreter.run(input, output);
 
     // Compute the softmax
-    //var expList = List<double>.filled(6, 0).reshape([1, 6]);
-    //print(expList);
-    var expList = List<double>.filled(6, 0).reshape([1, 6]);
-    for (var i=0; i < output[0].length; i++) {
-      print(exp(output[0][i]));
-    }
+    final vector1 = Vector.fromList(output[0]);
+    final expVec = vector1.exp();
+    print(expVec);
+    final sum = expVec.toList().reduce((a, b) => a + b);
+    final result = expVec.scalarDiv(sum);
+    print(result);
 
     return output;
   }

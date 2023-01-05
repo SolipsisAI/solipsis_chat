@@ -450,6 +450,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  ml_linalg:
+    dependency: "direct main"
+    description:
+      name: ml_linalg
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "13.11.20"
   package_config:
     dependency: transitive
     description:
