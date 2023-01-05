@@ -64,8 +64,10 @@ class Classifier {
     _interpreter.run(input, output);
 
     // Compute the softmax
-    final result = softmax(output[0]).toList();
+    final result = softmax(output[0]);
+    print(result);
     final labelIndex = argMax(result);
+    print("labelIndex: $labelIndex");
     return labels[labelIndex];
   }
 

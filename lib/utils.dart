@@ -44,10 +44,18 @@ Vector softmax(List<double> output) {
   final expVec = vector1.exp();
   final sum = expVec.toList().reduce((a, b) => a + b);
   final result = expVec.scalarDiv(sum);
-  result.max();
+  print(result.max());
   return result;
 }
 
-int argMax(List<double> input) {
-  return input.reduce(max).round();
+int argMax(Vector input) {
+  double maxVal = input.max();
+  var index = 0;
+  for (var i = 0; i < input.length; i++) {
+    if (input[i] == maxVal) {
+      index = i;
+      break;
+    }
+  }
+  return index;
 }

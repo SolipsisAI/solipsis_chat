@@ -79,7 +79,7 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
     _showTyping = true;
 
     final label = _classifier.classify(text);
-    final responseText = "The emotion is: $label";
+    var responseText = "The emotion is: $label";
 
     final message = types.TextMessage(
         author: _bot,
