@@ -2,15 +2,15 @@ import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 class Classifier {
-  final _vocabFile = 'text_classification_vocab.txt';
-  final _modelFile = 'text_classification.tflite';
+  final _vocabFile = 'text_classification_vocab.bert.txt';
+  final _modelFile = 'text_classification.bert.tflite';
 
   // Maximum length of sentence
   final int _sentenceLen = 256;
 
-  final String start = '<START>';
-  final String pad = '<PAD>';
-  final String unk = '<UNKNOWN>';
+  final String start = '[CLS]';
+  final String pad = '[PAD]';
+  final String unk = '[UNK]';
 
   late Map<String, int> _dict;
   late Interpreter _interpreter;
@@ -39,41 +39,33 @@ class Classifier {
     print('Dictionary loaded successfully');
   }
 
-  int classify(String rawText) {
+  List<dynamic> classify(String rawText) {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
-    List<List<double>> input = tokenizeInputText(rawText);
+    List<List<int>> input = tokenizeInputText(rawText);
 
     // output of shape [1,2].
-    var output = List<double>.filled(2, 0).reshape([1, 2]);
+    var output = List<double>.filled(6, 0).reshape([1, 6]);
 
     // The run method will run inference and
     // store the resulting values in output.
     _interpreter.run(input, output);
 
-    var result = 0;
+    print(output);
 
-    // If value of first element in output is greater than second,
-    // then sentece is negative
-    if ((output[0][0] as double) > (output[0][1] as double)) {
-      result = 0;
-    } else {
-      result = 1;
-    }
-
-    return result;
+    return output;
   }
 
-  List<List<double>> tokenizeInputText(String text) {
+  List<List<int>> tokenizeInputText(String text) {
     // Whitespace tokenization
     final toks = text.split(' ');
 
     // Create a list of length==_sentenceLen filled with the value <pad>
-    var vec = List<double>.filled(_sentenceLen, _dict[pad]!.toDouble());
+    var vec = List<int>.filled(_sentenceLen, _dict[pad]!);
 
     var index = 0;
     if (_dict.containsKey(start)) {
-      vec[index++] = _dict[start]!.toDouble();
+      vec[index++] = _dict[start]!;
     }
 
     // For each word in sentence find corresponding index in dict
@@ -81,12 +73,13 @@ class Classifier {
       if (index > _sentenceLen) {
         break;
       }
-      vec[index++] = _dict.containsKey(tok)
-          ? _dict[tok]!.toDouble()
-          : _dict[unk]!.toDouble();
+      vec[index++] = _dict.containsKey(tok.toLowerCase())
+          ? _dict[tok.toLowerCase()]!
+          : _dict[unk]!;
     }
 
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
+    print(vec);
     return [vec];
   }
 }
