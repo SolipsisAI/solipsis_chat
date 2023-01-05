@@ -37,10 +37,12 @@ setup_linux () {
 }
 
 setup_bazel () {
-  if [ ! command -v bazel ]; then
-    curl -o /tmp/bazel-installer.sh $BAZEL_URL
+  if ! command -v bazel &> /dev/null
+  then
+    echo "bazel-$BAZEL_VERSION not installed"
+    curl -L -o /tmp/bazel-installer.sh $BAZEL_URL
     chmod +x /tmp/bazel-installer.sh
-    /tmp/bazel-installer.sh
+    /tmp/bazel-installer.sh --user
   fi
 }
 
@@ -127,7 +129,7 @@ fi
 if [ ! -d  "$BLOBS_DIR/$dest_filename" ]; then
     echo "[INFO] Installing dependencies"
     setup_bazel
-    build_binaries
-    copy_to_project
+    #build_binaries
+    #copy_to_project
     echo "[SUCCESS] $dest_filename copied to $BLOBS_DIR"
 fi

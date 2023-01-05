@@ -19,8 +19,22 @@ git clone git@github.com:SolipsisAI/solipsis_chat.git
 cd solipsis_chat
 flutter pub get
 
-# Install libraries for desktop
+# SETUP PYTHON
+pyenv install miniforge3
+# Activate miniforge3
+pyenv shell miniforge3
+# Setup conda environment
+conda create --name tensorflow # this can be any name
+# Activate environment
+conda activate tensorflow
+# Install numpy
+conda install numpy
+
+# INSTALL LIBRARIES FOR DESKTOP
 bash ./install_libs.sh
+
+# INSTALL LIBRARIES FOR IOS
+INCLUDE_IOS=true bash ./install_libs.sh
 
 # Download model file and vocab text
 bash ./download_assets.sh
