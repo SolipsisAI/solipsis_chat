@@ -11,29 +11,11 @@ BAZEL_URL=https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/b
 BASE_LIB_FILENAME="libtensorflowlite_c"
 
 setup_python () {
-    pyenv install miniforge3
-
-    # Activate miniforge3
-    pyenv shell miniforge3
-
-    # Setup conda environment
-    conda create --name tensorflow # this can be any name
-
-    # Activate environment
-    conda activate tensorflow
-
-    # Install numpy
-    conda install numpy
-}
-
-setup_linux () {
-    sudo apt -y install curl gnupg
-    curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > bazel.gpg
-    sudo mv bazel.gpg /etc/apt/trusted.gpg.d/
-    echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
-
-    sudo apt -y update && sudo apt -y install bazel-$BAZEL_VERSION
-    sudo ln -s /usr/bin/bazel-$BAZEL_VERSION /usr/bin/bazel 
+  cd $PROJECT_DIR
+  python -m venv venv
+  source venv/bin/activate
+  echo $(which python)
+  pip install numpy
 }
 
 setup_bazel () {
@@ -47,8 +29,6 @@ setup_bazel () {
 }
 
 build_binaries () {
-  # setup_python
-
   cd $PROJECT_DIR/..
 
   if [ ! -d "$TF_DIR" ]; then
@@ -58,11 +38,12 @@ build_binaries () {
   cd $TF_DIR
 
   git checkout r$TF_VERSION
-  # Must be built on x86_64
+
   unamestr=$(uname)
   if [[ "$unamestr" == 'Linux' ]]; then
     bazel build -c opt //tensorflow/lite/c:tensorflowlite_c --define tflite_with_xnnpack=true
   elif [[ "$unamestr" == 'Darwin' ]]; then
+    # Must be built on x86_64 on M1
     arch -x86_64 bazel build -c opt //tensorflow/lite/c:tensorflowlite_c --define tflite_with_xnnpack=true
   fi
 }
@@ -129,7 +110,8 @@ fi
 if [ ! -d  "$BLOBS_DIR/$dest_filename" ]; then
     echo "[INFO] Installing dependencies"
     setup_bazel
-    #build_binaries
-    #copy_to_project
+    setup_python
+    build_binaries
+    copy_to_project
     echo "[SUCCESS] $dest_filename copied to $BLOBS_DIR"
 fi
