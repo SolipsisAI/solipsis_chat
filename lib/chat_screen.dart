@@ -1,11 +1,15 @@
 import 'dart:developer' as logger;
 import 'dart:convert';
+import 'dart:core';
+
+import 'package:queue/queue.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
+import 'package:solipsis_chat/core/response.dart';
 
 import 'models/chat_message.dart';
 import 'core/bot.dart';
@@ -30,6 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
+  final queue = Queue(delay: const Duration(milliseconds: 500));
 
   late ChatBot chatBot;
 
@@ -76,16 +81,16 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
+    //queue.add(() => chatBot.handleMessage(text));
+    _showTyping = false;
+  }
 
-    final response = await chatBot.handleMessage(text);
+  void addBotResponse(ChatResponse response) {
     final message = types.TextMessage(
         author: _bot,
         createdAt: currentTimestamp(),
         id: randomString(),
         text: response.text);
-    
-    _showTyping = false;
-
     _addMessage(message);
   }
 
