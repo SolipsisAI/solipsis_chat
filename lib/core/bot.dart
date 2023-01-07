@@ -7,16 +7,6 @@ import '../classifiers/emotion_classifier.dart';
 import '../classifiers/sentiment_classifier.dart';
 import 'response.dart';
 
-Function handleMessage(Map<String, Classifier> classifiers) {
-  return (rawText) {
-    print('handleMessage');
-    Map<String, String> results = {};
-    classifiers.forEach((name, classifier) { results[name] = classifier.classify(rawText); });
-
-    return results.values.join(', ');
-  };
-}
-
 class ChatBot {
   final List<ChatRequest> requests = [];
 
@@ -49,6 +39,12 @@ class ChatBot {
     final requestsLen = requests.length;
     print('processing $requestsLen requests');
     asyncExecutor.executeAll(requests);
+  }
+
+  String process(String rawText) {
+    Map<String, String> results = {};
+    classifiers.forEach((name, classifier) { results[name] = classifier.classify(rawText); });
+    return results.values.join(', ');
   }
 }
 
