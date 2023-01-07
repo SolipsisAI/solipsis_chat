@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'chat.dart';
+import 'chat_screen.dart';
 import 'models/chat_message.dart';
 import 'models/chat_user.dart';
 
@@ -34,7 +34,7 @@ class SolipsisChat extends StatelessWidget {
         },
         child: MaterialApp(
           title: 'SolipsisChat',
-          home: SolipsisChatHome(isar: isar, chatMessages: chatMessages),
+          home: ChatScreen(isar: isar, chatMessages: chatMessages),
         ));
   }
 }

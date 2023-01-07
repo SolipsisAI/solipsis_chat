@@ -1,22 +1,17 @@
-import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import '../utils.dart';
 
-class EmotionClassifier {
-  final _vocabFile = 'emotion_classification.vocab.txt';
-  final _modelFile = 'emotion_classification.tflite';
+import 'classifier.dart';
 
-  // Maximum length of sentence
-  final int _sentenceLen = 256;
+const vocabFile = 'emotion_classification.vocab.txt';
+const modelFile = 'emotion_classification.tflite';
+const int _sentenceLen = 256;
+const String start = '[CLS]';
+const String pad = '[PAD]';
+const String unk = '[UNK]';
+const String sep = '[SEP]';
 
-  final String start = '[CLS]';
-  final String pad = '[PAD]';
-  final String unk = '[UNK]';
-  final String sep = '[SEP]';
-
-  late Map<String, int> _dict;
-  late Interpreter _interpreter;
-
+class EmotionClassifier extends Classifier {
   final List<String> labels = [
     "sadness",
     "joy",
@@ -26,31 +21,9 @@ class EmotionClassifier {
     "surprise"
   ];
 
-  EmotionClassifier() {
-    // Load model when the classifier is initialized.
-    _loadModel();
-    _loadDictionary();
-  }
+  EmotionClassifier() : super(vocabFile, modelFile);
 
-  void _loadModel() async {
-    // Creating the interpreter using Interpreter.fromAsset
-    _interpreter = await Interpreter.fromAsset(_modelFile);
-    print('Interpreter loaded successfully');
-  }
-
-  void _loadDictionary() async {
-    final vocab = await rootBundle.loadString('assets/$_vocabFile');
-    var dict = <String, int>{};
-    final vocabList = vocab.split('\n');
-    for (var i = 0; i < vocabList.length; i++) {
-      var entry = vocabList[i].trim().split(' ');
-      dict[entry[0]] = int.parse(entry[1]);
-    }
-    _dict = dict;
-    print('Dictionary loaded successfully');
-  }
-
-  String classify(String rawText) {
+  Future<String> classify(String rawText) async {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
     List<List<int>> input = tokenizeInputText(rawText);
@@ -61,13 +34,11 @@ class EmotionClassifier {
 
     // The run method will run inference and
     // store the resulting values in output.
-    _interpreter.run(input, output);
+    interpreter.run(input, output);
 
     // Compute the softmax
     final result = softmax(output[0]);
-    print(result);
     final labelIndex = argMax(result);
-    print("labelIndex: $labelIndex");
     return labels[labelIndex];
   }
 
@@ -76,11 +47,11 @@ class EmotionClassifier {
     final toks = text.split(' ');
 
     // Create a list of length==_sentenceLen filled with the value <pad>
-    var vec = List<int>.filled(_sentenceLen, _dict[pad]!);
+    var vec = List<int>.filled(_sentenceLen, dict[pad]!);
 
     var index = 0;
-    if (_dict.containsKey(start)) {
-      vec[index++] = _dict[start]!;
+    if (dict.containsKey(start)) {
+      vec[index++] = dict[start]!;
     }
 
     // For each word in sentence find corresponding index in dict
@@ -88,16 +59,48 @@ class EmotionClassifier {
       if (index > _sentenceLen) {
         break;
       }
-      vec[index++] = _dict.containsKey(tok.toLowerCase())
-          ? _dict[tok.toLowerCase()]!
-          : _dict[unk]!;
+      var encoded = wordPiece(tok.toLowerCase());
+      for (var word in encoded) {
+        vec[index++] = dict.containsKey(word.toLowerCase())
+            ? dict[word.toLowerCase()]!
+            : dict[unk]!;
+      }
     }
 
     // EOS
-    vec[index++] = _dict[sep]!;
+    vec[index++] = dict[sep]!;
 
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
-    print(vec);
     return [vec];
+  }
+
+  List<String> wordPiece(String input) {
+    var word = input;
+    var tokens = [word];
+
+    while (word.isNotEmpty) {
+      var i = word.length;
+      var key = word.substring(0, i);
+      var inVocab = dict.containsKey(key);
+      while (i > 0 && !inVocab) {
+        i -= 1;
+      }
+
+      if (i == 0) {
+        return [unk];
+      }
+
+      if (!tokens.contains(key)) {
+        tokens.add(key);
+      }
+
+      word = (i + 1 < key.length) ? key.substring(i + 1, key.length) : "";
+
+      if (word.isNotEmpty) {
+        word = '##$word';
+      }
+    }
+
+    return tokens;
   }
 }

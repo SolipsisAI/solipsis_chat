@@ -1,45 +1,18 @@
-import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
-class Classifier {
-  final _vocabFile = 'sentiment_classification.vocab.txt';
-  final _modelFile = 'sentiment_classification.tflite';
+import 'classifier.dart';
 
-  // Maximum length of sentence
-  final int _sentenceLen = 256;
+const vocabFile = 'sentiment_classification.vocab.txt';
+const modelFile = 'sentiment_classification.tflite';
+const int sentenceLen = 256;
+const String start = '<START>';
+const String pad = '<PAD>';
+const String unk = '<UNKNOWN>';
 
-  final String start = '<START>';
-  final String pad = '<PAD>';
-  final String unk = '<UNKNOWN>';
+class SentimentClassifier extends Classifier {
+  SentimentClassifier() : super(vocabFile, modelFile);
 
-  late Map<String, int> _dict;
-  late Interpreter _interpreter;
-
-  Classifier() {
-    // Load model when the classifier is initialized.
-    _loadModel();
-    _loadDictionary();
-  }
-
-  void _loadModel() async {
-    // Creating the interpreter using Interpreter.fromAsset
-    _interpreter = await Interpreter.fromAsset(_modelFile);
-    print('Interpreter loaded successfully');
-  }
-
-  void _loadDictionary() async {
-    final vocab = await rootBundle.loadString('assets/$_vocabFile');
-    var dict = <String, int>{};
-    final vocabList = vocab.split('\n');
-    for (var i = 0; i < vocabList.length; i++) {
-      var entry = vocabList[i].trim().split(' ');
-      dict[entry[0]] = int.parse(entry[1]);
-    }
-    _dict = dict;
-    print('Dictionary loaded successfully');
-  }
-
-  int classify(String rawText) {
+  Future<int> classify(String rawText) async {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
     List<List<double>> input = tokenizeInputText(rawText);
@@ -49,12 +22,12 @@ class Classifier {
 
     // The run method will run inference and
     // store the resulting values in output.
-    _interpreter.run(input, output);
+    interpreter.run(input, output);
 
     var result = 0;
 
     // If value of first element in output is greater than second,
-    // then sentece is negative
+    // then the sentence is negative
     if ((output[0][0] as double) > (output[0][1] as double)) {
       result = 0;
     } else {
@@ -69,21 +42,20 @@ class Classifier {
     final toks = text.split(' ');
 
     // Create a list of length==_sentenceLen filled with the value <pad>
-    var vec = List<double>.filled(_sentenceLen, _dict[pad]!.toDouble());
+    var vec = List<double>.filled(sentenceLen, dict[pad]!.toDouble());
 
     var index = 0;
-    if (_dict.containsKey(start)) {
-      vec[index++] = _dict[start]!.toDouble();
+    if (dict.containsKey(start)) {
+      vec[index++] = dict[start]!.toDouble();
     }
 
     // For each word in sentence find corresponding index in dict
     for (var tok in toks) {
-      if (index > _sentenceLen) {
+      if (index > sentenceLen) {
         break;
       }
-      vec[index++] = _dict.containsKey(tok)
-          ? _dict[tok]!.toDouble()
-          : _dict[unk]!.toDouble();
+      vec[index++] =
+          dict.containsKey(tok) ? dict[tok]!.toDouble() : dict[unk]!.toDouble();
     }
 
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
