@@ -23,7 +23,6 @@ class ChatBot {
   late AsyncExecutor asyncExecutor;
   late Map<String, Classifier> classifiers;
 
-  final knownPrimes = SharedData<List<int>, List<int>>([2, 3, 5]);
   late SharedData<List<Function>, List<String>> callbacks;
 
   ChatBot() {
@@ -43,7 +42,7 @@ class ChatBot {
   }
 
   void makeRequest(String rawText) {
-    requests.add(ChatRequest(0, knownPrimes));
+    requests.add(ChatRequest(rawText, callbacks));
   }
 
 }
@@ -52,7 +51,7 @@ class ChatBot {
 // for execution. Task instances are returned, but won't be executed and
 // will be used only to identify the task type:
 List<AsyncTask> _taskTypeRegister() =>
-    [ChatRequest(0, SharedData<List<int>, List<int>>([]))];
+    [ChatRequest("", SharedData<List<Function>, List<String>>([]))];
 
 // A task that checks if a number is prime:
 class ChatRequest extends AsyncTask<String, bool> {
@@ -60,9 +59,9 @@ class ChatRequest extends AsyncTask<String, bool> {
   final String text;
 
   // A list of known primes, shared between tasks.
-  final SharedData<List<int>, List<int>> knownPrimes;
+  final SharedData<List<Function>, List<String>> callbacks;
 
-  ChatRequest(this.text, this.knownPrimes);
+  ChatRequest(this.text, this.callbacks);
 
   // Instantiates a `PrimeChecker` task with `parameters` and `sharedData`.
   @override
@@ -70,20 +69,20 @@ class ChatRequest extends AsyncTask<String, bool> {
       [Map<String, SharedData>? sharedData]) {
     return ChatRequest(
       parameters,
-      sharedData!['knownPrimes'] as SharedData<List<int>, List<int>>,
+      sharedData!['callbacks'] as SharedData<List<Function>, List<String>>,
     );
   }
 
   // The `SharedData` of this task.
   @override
-  Map<String, SharedData> sharedData() => {'knownPrimes': knownPrimes};
+  Map<String, SharedData> sharedData() => {'callbacks': callbacks};
 
   // Loads the `SharedData` from `serial` for each key.
   @override
-  SharedData<List<int>, List<int>> loadSharedData(String key, dynamic serial) {
+  SharedData<List<Function>, List<String>> loadSharedData(String key, dynamic serial) {
     switch (key) {
       case 'knownPrimes':
-        return SharedData<List<int>, List<int>>(serial);
+        return SharedData<List<Function>, List<String>>(serial);
       default:
         throw StateError('Unknown key: $key');
     }
@@ -97,28 +96,7 @@ class ChatRequest extends AsyncTask<String, bool> {
 
   // Runs the task code:
   @override
-  FutureOr<ChatResponse> run() {
-    return ();
-  }
-
-  // A simple prime check function:
-  bool isPrime(int n) {
-    if (n < 2) return false;
-
-    // The pre-computed primes, optimizing this checking algorithm:
-    if (knownPrimes.data.contains(n)) {
-      return true;
-    }
-
-    // If a number N has a prime factor larger than `sqrt(N)`,
-    // then it surely has a prime factor smaller `sqrt(N)`.
-    // So it's sufficient to search for prime factors in the range [1,sqrt(N)]:
-    var limit = (sqrt(n) + 1).toInt();
-
-    for (var p = 2; p < limit; ++p) {
-      if (n % p == 0) return false;
-    }
-
+  FutureOr<bool> run() {
     return true;
   }
 }
