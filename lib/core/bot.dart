@@ -42,7 +42,6 @@ class ChatBot {
   }
 
   void makeRequest(String rawText) {
-    print('rawText: $rawText');
     requests.add(ChatRequest(rawText, callbacks));
   }
 
@@ -82,7 +81,7 @@ class ChatRequest extends AsyncTask<String, bool> {
   @override
   SharedData<List<Function>, List<String>> loadSharedData(String key, dynamic serial) {
     switch (key) {
-      case 'knownPrimes':
+      case 'callbacks':
         return SharedData<List<Function>, List<String>>(serial);
       default:
         throw StateError('Unknown key: $key');
@@ -98,6 +97,8 @@ class ChatRequest extends AsyncTask<String, bool> {
   // Runs the task code:
   @override
   FutureOr<bool> run() {
+    print('rawText: $text');
+    for (var callback in callbacks.data) { callback(text); }
     return true;
   }
 }
