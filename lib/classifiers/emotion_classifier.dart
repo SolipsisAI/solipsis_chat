@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
-import 'utils.dart';
+import '../utils.dart';
 
-class Classifier {
+class EmotionClassifier {
   final _vocabFile = 'text_classification_vocab.bert.txt';
   final _modelFile = 'text_classification.bert.tflite';
 
@@ -26,7 +26,7 @@ class Classifier {
     "surprise"
   ];
 
-  Classifier() {
+  EmotionClassifier() {
     // Load model when the classifier is initialized.
     _loadModel();
     _loadDictionary();
