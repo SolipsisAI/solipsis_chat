@@ -35,7 +35,7 @@ class EmotionClassifier {
   void _loadModel() async {
     // Creating the interpreter using Interpreter.fromAsset
     _interpreter = await Interpreter.fromAsset(_modelFile);
-    print('Interpreter loaded successfully');
+    print('Interpreter $_modelFile loaded successfully');
   }
 
   void _loadDictionary() async {
@@ -47,7 +47,7 @@ class EmotionClassifier {
       dict[entry[0]] = int.parse(entry[1]);
     }
     _dict = dict;
-    print('Dictionary loaded successfully');
+    print('$_vocabFile loaded successfully as Dictionary');
   }
 
   String classify(String rawText) {

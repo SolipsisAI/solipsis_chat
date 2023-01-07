@@ -12,8 +12,8 @@ import 'models/chat_message.dart';
 import 'core/bot.dart';
 import 'utils.dart';
 
-class SolipsisChatHome extends StatefulWidget {
-  const SolipsisChatHome(
+class ChatScreen extends StatefulWidget {
+  const ChatScreen(
       {Key? key, required this.isar, required this.chatMessages})
       : super(key: key);
 
@@ -21,10 +21,10 @@ class SolipsisChatHome extends StatefulWidget {
   final List<ChatMessage> chatMessages;
 
   @override
-  _SolipsisChatHomeState createState() => _SolipsisChatHomeState();
+  _ChatScreenState createState() => _ChatScreenState();
 }
 
-class _SolipsisChatHomeState extends State<SolipsisChatHome> {
+class _ChatScreenState extends State<ChatScreen> {
   bool _showTyping = false;
   int _page = 0;
 
