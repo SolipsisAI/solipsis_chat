@@ -1,11 +1,12 @@
-import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import '../utils.dart';
 
-class EmotionClassifier {
-  final _vocabFile = 'emotion_classification.vocab.txt';
-  final _modelFile = 'emotion_classification.tflite';
+import 'classifier.dart';
 
+const vocabFile = 'emotion_classification.vocab.txt';
+const modelFile = 'emotion_classification.tflite';
+
+class EmotionClassifier extends Classifier {
   // Maximum length of sentence
   final int _sentenceLen = 256;
 
@@ -13,9 +14,6 @@ class EmotionClassifier {
   final String pad = '[PAD]';
   final String unk = '[UNK]';
   final String sep = '[SEP]';
-
-  late Map<String, int> _dict;
-  late Interpreter _interpreter;
 
   final List<String> labels = [
     "sadness",
@@ -26,29 +24,7 @@ class EmotionClassifier {
     "surprise"
   ];
 
-  EmotionClassifier() {
-    // Load model when the classifier is initialized.
-    _loadModel();
-    _loadDictionary();
-  }
-
-  void _loadModel() async {
-    // Creating the interpreter using Interpreter.fromAsset
-    _interpreter = await Interpreter.fromAsset(_modelFile);
-    print('Interpreter $_modelFile loaded successfully');
-  }
-
-  void _loadDictionary() async {
-    final vocab = await rootBundle.loadString('assets/$_vocabFile');
-    var dict = <String, int>{};
-    final vocabList = vocab.split('\n');
-    for (var i = 0; i < vocabList.length; i++) {
-      var entry = vocabList[i].trim().split(' ');
-      dict[entry[0]] = int.parse(entry[1]);
-    }
-    _dict = dict;
-    print('$_vocabFile loaded successfully as Dictionary');
-  }
+  EmotionClassifier() : super(vocabFile, modelFile);
 
   String classify(String rawText) {
     // tokenizeInputText returns List<List<double>>
@@ -61,7 +37,7 @@ class EmotionClassifier {
 
     // The run method will run inference and
     // store the resulting values in output.
-    _interpreter.run(input, output);
+    interpreter.run(input, output);
 
     // Compute the softmax
     final result = softmax(output[0]);
@@ -76,11 +52,11 @@ class EmotionClassifier {
     final toks = text.split(' ');
 
     // Create a list of length==_sentenceLen filled with the value <pad>
-    var vec = List<int>.filled(_sentenceLen, _dict[pad]!);
+    var vec = List<int>.filled(_sentenceLen, dict[pad]!);
 
     var index = 0;
-    if (_dict.containsKey(start)) {
-      vec[index++] = _dict[start]!;
+    if (dict.containsKey(start)) {
+      vec[index++] = dict[start]!;
     }
 
     // For each word in sentence find corresponding index in dict
@@ -88,13 +64,13 @@ class EmotionClassifier {
       if (index > _sentenceLen) {
         break;
       }
-      vec[index++] = _dict.containsKey(tok.toLowerCase())
-          ? _dict[tok.toLowerCase()]!
-          : _dict[unk]!;
+      vec[index++] = dict.containsKey(tok.toLowerCase())
+          ? dict[tok.toLowerCase()]!
+          : dict[unk]!;
     }
 
     // EOS
-    vec[index++] = _dict[sep]!;
+    vec[index++] = dict[sep]!;
 
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
     print(vec);

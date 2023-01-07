@@ -1,43 +1,19 @@
-import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
-class SentimentClassifier {
-  final _vocabFile = 'sentiment_classification.vocab.txt';
-  final _modelFile = 'sentiment_classification.tflite';
+import 'classifier.dart';
 
+const vocabFile = 'sentiment_classification.vocab.txt';
+const modelFile = 'sentiment_classification.tflite';
+
+class SentimentClassifier extends Classifier {
   // Maximum length of sentence
-  final int _sentenceLen = 256;
+  final int sentenceLen = 256;
 
   final String start = '<START>';
   final String pad = '<PAD>';
   final String unk = '<UNKNOWN>';
 
-  late Map<String, int> _dict;
-  late Interpreter _interpreter;
-
-  SentimentClassifier() {
-    // Load model when the classifier is initialized.
-    _loadModel();
-    _loadDictionary();
-  }
-
-  void _loadModel() async {
-    // Creating the interpreter using Interpreter.fromAsset
-    _interpreter = await Interpreter.fromAsset(_modelFile);
-    print('Interpreter $_modelFile loaded successfully');
-  }
-
-  void _loadDictionary() async {
-    final vocab = await rootBundle.loadString('assets/$_vocabFile');
-    var dict = <String, int>{};
-    final vocabList = vocab.split('\n');
-    for (var i = 0; i < vocabList.length; i++) {
-      var entry = vocabList[i].trim().split(' ');
-      dict[entry[0]] = int.parse(entry[1]);
-    }
-    _dict = dict;
-    print('$_vocabFile loaded successfully as Dictionary');
-  }
+  SentimentClassifier() : super(vocabFile, modelFile);
 
   int classify(String rawText) {
     // tokenizeInputText returns List<List<double>>
@@ -49,7 +25,7 @@ class SentimentClassifier {
 
     // The run method will run inference and
     // store the resulting values in output.
-    _interpreter.run(input, output);
+    interpreter.run(input, output);
 
     var result = 0;
 
@@ -69,21 +45,21 @@ class SentimentClassifier {
     final toks = text.split(' ');
 
     // Create a list of length==_sentenceLen filled with the value <pad>
-    var vec = List<double>.filled(_sentenceLen, _dict[pad]!.toDouble());
+    var vec = List<double>.filled(sentenceLen, dict[pad]!.toDouble());
 
     var index = 0;
-    if (_dict.containsKey(start)) {
-      vec[index++] = _dict[start]!.toDouble();
+    if (dict.containsKey(start)) {
+      vec[index++] = dict[start]!.toDouble();
     }
 
     // For each word in sentence find corresponding index in dict
     for (var tok in toks) {
-      if (index > _sentenceLen) {
+      if (index > sentenceLen) {
         break;
       }
-      vec[index++] = _dict.containsKey(tok)
-          ? _dict[tok]!.toDouble()
-          : _dict[unk]!.toDouble();
+      vec[index++] = dict.containsKey(tok)
+          ? dict[tok]!.toDouble()
+          : dict[unk]!.toDouble();
     }
 
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
