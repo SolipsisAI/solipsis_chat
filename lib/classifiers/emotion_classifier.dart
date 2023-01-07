@@ -61,11 +61,11 @@ class EmotionClassifier extends Classifier {
       if (index > _sentenceLen) {
         break;
       }
-      var encodedWords = encodeWord(tok.toLowerCase());
-      for (var encodedWord in encodedWords) {
-        vec[index++] = dict.containsKey(encodedWord.toLowerCase())
-            ? dict[encodedWord.toLowerCase()]!
-            : dict[unk]!; 
+      var encoded = wordPiece(tok.toLowerCase());
+      for (var word in encoded) {
+        vec[index++] = dict.containsKey(word.toLowerCase())
+            ? dict[word.toLowerCase()]!
+            : dict[unk]!;
       }
     }
 
@@ -77,25 +77,35 @@ class EmotionClassifier extends Classifier {
     return [vec];
   }
 
-  List<String> encodeWord(String word) {
+  List<String> wordPiece(String input) {
+    var word = input;
     var tokens = [word];
-    var _word = word;
 
-    while (_word.length > 0) {
-      var i = _word.length;
-      var key = _word.substring(0, _word.length - 1);
-      while (i > 0 && !dict.containsKey(key)) {
+    while (word.isNotEmpty) {
+      var i = word.length;
+      var key = word.substring(0, i);
+      var inVocab = dict.containsKey(key);
+      while (i > 0 && !inVocab) {
         i -= 1;
       }
+
       if (i == 0) {
         return [unk];
       }
-      tokens.add(key);
-      _word = _word.substring(i, _word.length - 1);
-      if (_word.length > 0) {
-        _word = '##$_word';
+
+      if (!tokens.contains(key)) {
+        tokens.add(key);
+      }
+
+      word = (i + 1 < key.length) ? key.substring(i + 1, key.length) : "";
+
+      if (word.isNotEmpty) {
+        word = '##$word';
       }
     }
+
+    print(tokens);
+
     return tokens;
   }
 }
