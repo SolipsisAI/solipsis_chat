@@ -1,7 +1,6 @@
 class ChatResponse {
-  int sentiment;
-  String emotion;
   String text;
+  Map <String, String> results;
 
-  ChatResponse(this.text, this.emotion, this.sentiment);
+  ChatResponse(this.text, this.results);
 }

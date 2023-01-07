@@ -2,18 +2,29 @@ import 'dart:async';
 import 'dart:math';
 import 'package:async_task/async_task.dart';
 
+import '../classifiers/classifier.dart';
 import '../classifiers/emotion_classifier.dart';
 import '../classifiers/sentiment_classifier.dart';
 import 'response.dart';
 
+Function handleMessage(Map<String, Classifier> classifiers) {
+  return (rawText) {
+    print('handleMessage');
+    Map<String, String> results = {};
+    classifiers.forEach((name, classifier) { results[name] = classifier.classify(rawText); });
+
+    return results.values.join(', ');
+  };
+}
+
 class ChatBot {
   final List<ChatRequest> requests = [];
 
-  late EmotionClassifier emotionClassifier;
-  late SentimentClassifier sentimentClassifier;
   late AsyncExecutor asyncExecutor;
+  late Map<String, Classifier> classifiers;
 
   final knownPrimes = SharedData<List<int>, List<int>>([2, 3, 5]);
+  late SharedData<List<Function>, List<String>> callbacks;
 
   ChatBot() {
     // Initialize executor
@@ -25,22 +36,16 @@ class ChatBot {
     asyncExecutor.logger.enabled = true;
 
     // Initialize classifiers
-    emotionClassifier = EmotionClassifier();
-    sentimentClassifier = SentimentClassifier();
+    classifiers = {"emotion": EmotionClassifier(), "sentiment": SentimentClassifier()};
+
+    // Init shared data
+    callbacks = SharedData<List<Function>, List<String>>([handleMessage(classifiers)]);
   }
 
   void makeRequest(String rawText) {
     requests.add(ChatRequest(0, knownPrimes));
   }
 
-  Future<ChatResponse> handleMessage(String rawText) async {
-    print('handleMessage');
-    final emotion = await emotionClassifier.classify(rawText);
-    final sentiment = await sentimentClassifier.classify(rawText);
-    String sentimentLabel = sentiment == 0 ? "NEGATIVE" : "POSITIVE";
-    String text = 'Your emotion is $emotion. Your sentiment is $sentimentLabel';
-    return ChatResponse(text, emotion, sentiment);
-  }
 }
 
 // This top-level function returns the tasks types that will be registered
@@ -50,18 +55,18 @@ List<AsyncTask> _taskTypeRegister() =>
     [ChatRequest(0, SharedData<List<int>, List<int>>([]))];
 
 // A task that checks if a number is prime:
-class ChatRequest extends AsyncTask<int, bool> {
+class ChatRequest extends AsyncTask<String, bool> {
   // The number to check if is prime.
-  final int n;
+  final String text;
 
   // A list of known primes, shared between tasks.
   final SharedData<List<int>, List<int>> knownPrimes;
 
-  ChatRequest(this.n, this.knownPrimes);
+  ChatRequest(this.text, this.knownPrimes);
 
   // Instantiates a `PrimeChecker` task with `parameters` and `sharedData`.
   @override
-  ChatRequest instantiate(int parameters,
+  ChatRequest instantiate(String parameters,
       [Map<String, SharedData>? sharedData]) {
     return ChatRequest(
       parameters,
@@ -86,14 +91,14 @@ class ChatRequest extends AsyncTask<int, bool> {
 
   // The parameters of this task:
   @override
-  int parameters() {
-    return n;
+  String parameters() {
+    return text;
   }
 
   // Runs the task code:
   @override
-  FutureOr<bool> run() {
-    return isPrime(n);
+  FutureOr<ChatResponse> run() {
+    return ();
   }
 
   // A simple prime check function:

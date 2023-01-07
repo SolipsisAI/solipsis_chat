@@ -13,6 +13,10 @@ class Classifier {
     _loadDictionary();
   }
 
+  String classify(String rawText) {
+    return "";
+  }
+
   void _loadModel() async {
     // Creating the interpreter using Interpreter.fromAsset
     interpreter = await Interpreter.fromAsset(modelFile);

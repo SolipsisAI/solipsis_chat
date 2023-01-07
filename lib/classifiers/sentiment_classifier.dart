@@ -12,7 +12,8 @@ const String unk = '<UNKNOWN>';
 class SentimentClassifier extends Classifier {
   SentimentClassifier() : super(vocabFile, modelFile);
 
-  Future<int> classify(String rawText) async {
+  @override
+  Future<String> classify(String rawText) async {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
     List<List<double>> input = tokenizeInputText(rawText);
@@ -24,17 +25,17 @@ class SentimentClassifier extends Classifier {
     // store the resulting values in output.
     interpreter.run(input, output);
 
-    var result = 0;
+    var sentiment = "";
 
     // If value of first element in output is greater than second,
     // then the sentence is negative
     if ((output[0][0] as double) > (output[0][1] as double)) {
-      result = 0;
+      sentiment = "NEGATIVE";
     } else {
-      result = 1;
+      sentiment = "POSITIVE";
     }
 
-    return result;
+    return sentiment;
   }
 
   List<List<double>> tokenizeInputText(String text) {

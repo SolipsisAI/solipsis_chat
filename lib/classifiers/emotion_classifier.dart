@@ -23,6 +23,7 @@ class EmotionClassifier extends Classifier {
 
   EmotionClassifier() : super(vocabFile, modelFile);
 
+  @override
   Future<String> classify(String rawText) async {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
