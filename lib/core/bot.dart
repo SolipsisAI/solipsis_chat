@@ -1,23 +1,13 @@
 import 'dart:async';
 import 'package:async_task/async_task.dart';
 
-import '../classifiers/classifier.dart';
-import '../classifiers/emotion_classifier.dart';
-import '../classifiers/sentiment_classifier.dart';
-
-import 'core.dart';
-
 class ChatBot {
   final List<ChatRequest> requests = [];
   
-  late ChatCore core;
   late AsyncExecutor asyncExecutor;
   late SharedData<List<String>, List<String>> rawTexts;
 
   ChatBot() {
-    // Init the core
-    core = ChatCore.initialize();
-
     // Raw Texts
     rawTexts = SharedData<List<String>, List<String>>([]);
 

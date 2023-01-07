@@ -3,11 +3,13 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'chat_screen.dart';
+import 'core/core.dart';
 import 'models/chat_message.dart';
 import 'models/chat_user.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  ChatCore.initialize();
   final dir = await getApplicationSupportDirectory();
   final Isar _isar = await Isar.open(
       schemas: [ChatMessageSchema, ChatUserSchema], directory: dir.path);
