@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import '../classifiers/emotion_classifier.dart';
 import '../classifiers/sentiment_classifier.dart';
 import 'response.dart';

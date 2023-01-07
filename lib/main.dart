@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'chat_screen.dart';
 import 'models/chat_message.dart';
@@ -12,7 +13,7 @@ void main() async {
   final Isar _isar = await Isar.open(
       schemas: [ChatMessageSchema, ChatUserSchema], directory: dir.path);
   final chatMessages = await _isar.chatMessages.where().findAll();
-  runApp(SolipsisChat(isar: _isar, chatMessages: chatMessages));
+  runApp(ProviderScope(child: SolipsisChat(isar: _isar, chatMessages: chatMessages)));
 }
 
 class SolipsisChat extends StatelessWidget {
