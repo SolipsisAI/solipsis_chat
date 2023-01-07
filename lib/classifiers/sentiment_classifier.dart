@@ -13,7 +13,7 @@ class SentimentClassifier extends Classifier {
   SentimentClassifier() : super(vocabFile, modelFile);
 
   @override
-  Future<String> classify(String rawText) async {
+  String classify(String rawText) {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
     List<List<double>> input = tokenizeInputText(rawText);

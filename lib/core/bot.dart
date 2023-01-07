@@ -42,6 +42,7 @@ class ChatBot {
   }
 
   void makeRequest(String rawText) {
+    print('rawText: $rawText');
     requests.add(ChatRequest(rawText, callbacks));
   }
 
