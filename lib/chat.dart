@@ -6,9 +6,10 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
+import 'package:solipsis_chat/core/response.dart';
 
 import 'models/chat_message.dart';
-import 'classifiers/emotion_classifier.dart';
+import 'core/bot.dart';
 import 'utils.dart';
 
 class SolipsisChatHome extends StatefulWidget {
@@ -32,12 +33,12 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
-  late EmotionClassifier _classifier;
+  late ChatBot chatBot;
 
   @override
   void initState() {
     super.initState();
-    _classifier = EmotionClassifier();
+    chatBot = ChatBot();
     for (var i = 0; i < widget.chatMessages.length; i++) {
       setState(() {
         _messages.insert(
@@ -78,14 +79,13 @@ class _SolipsisChatHomeState extends State<SolipsisChatHome> {
   Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
 
-    final label = _classifier.classify(text);
-    var responseText = "The emotion is: $label";
+    final ChatResponse response = chatBot.handleMessage(text);
 
     final message = types.TextMessage(
         author: _bot,
         createdAt: currentTimestamp(),
         id: randomString(),
-        text: responseText);
+        text: response.text);
 
     await Future.delayed(
         Duration(seconds: messageDelay(message)), () => _showTyping = false);
