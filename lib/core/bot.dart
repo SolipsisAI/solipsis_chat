@@ -45,6 +45,11 @@ class ChatBot {
     requests.add(ChatRequest(rawText, callbacks));
   }
 
+  void processRequests() async {
+    final requestsLen = requests.length;
+    print('processing $requestsLen requests');
+    asyncExecutor.executeAll(requests);
+  }
 }
 
 // This top-level function returns the tasks types that will be registered

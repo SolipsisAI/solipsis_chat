@@ -81,8 +81,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
-    // TODO: call bot
     chatBot.makeRequest(text);
+    chatBot.processRequests();
     _showTyping = false;
   }
 
