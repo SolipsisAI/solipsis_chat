@@ -6,7 +6,6 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
-import 'package:solipsis_chat/core/response.dart';
 
 import 'models/chat_message.dart';
 import 'core/bot.dart';
@@ -79,15 +78,13 @@ class _ChatScreenState extends State<ChatScreen> {
     _showTyping = true;
 
     final response = await chatBot.handleMessage(text);
-
     final message = types.TextMessage(
         author: _bot,
         createdAt: currentTimestamp(),
         id: randomString(),
         text: response.text);
-
-    await Future.delayed(
-        Duration(seconds: messageDelay(message)), () => _showTyping = false);
+    
+    _showTyping = false;
 
     _addMessage(message);
   }
