@@ -12,12 +12,11 @@ class ChatBot {
     sentimentClassifier = SentimentClassifier();
   }
 
-  ChatResponse handleMessage(String rawText) {
-    String emotion = emotionClassifier.classify(rawText);
-    int sentiment = sentimentClassifier.classify(rawText);
+  Future<ChatResponse> handleMessage(String rawText) async {
+    final emotion = await emotionClassifier.classify(rawText);
+    final sentiment = await sentimentClassifier.classify(rawText);
     String sentimentLabel = sentiment == 0 ? "NEGATIVE" : "POSITIVE";
 
-    // TODO: templates
     String text = 'Your emotion is $emotion. Your sentiment is $sentimentLabel';
 
     return ChatResponse(text, emotion, sentiment);

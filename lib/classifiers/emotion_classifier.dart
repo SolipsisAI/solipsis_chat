@@ -23,7 +23,7 @@ class EmotionClassifier extends Classifier {
 
   EmotionClassifier() : super(vocabFile, modelFile);
 
-  String classify(String rawText) {
+  Future<String> classify(String rawText) async {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
     List<List<int>> input = tokenizeInputText(rawText);
@@ -38,9 +38,7 @@ class EmotionClassifier extends Classifier {
 
     // Compute the softmax
     final result = softmax(output[0]);
-    print(result);
     final labelIndex = argMax(result);
-    print("labelIndex: $labelIndex");
     return labels[labelIndex];
   }
 
@@ -73,7 +71,6 @@ class EmotionClassifier extends Classifier {
     vec[index++] = dict[sep]!;
 
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
-    print(vec);
     return [vec];
   }
 
@@ -103,8 +100,6 @@ class EmotionClassifier extends Classifier {
         word = '##$word';
       }
     }
-
-    print(tokens);
 
     return tokens;
   }

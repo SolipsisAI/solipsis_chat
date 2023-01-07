@@ -13,8 +13,7 @@ import 'core/bot.dart';
 import 'utils.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen(
-      {Key? key, required this.isar, required this.chatMessages})
+  const ChatScreen({Key? key, required this.isar, required this.chatMessages})
       : super(key: key);
 
   final Isar isar;
@@ -79,7 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
 
-    final ChatResponse response = chatBot.handleMessage(text);
+    final response = await chatBot.handleMessage(text);
 
     final message = types.TextMessage(
         author: _bot,
@@ -110,7 +109,7 @@ class _ChatScreenState extends State<ChatScreen> {
     logger.log('data: $message');
   }
 
-  void _handleSendPressed(types.PartialText message) {
+  void _handleSendPressed(types.PartialText message) async {
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: currentTimestamp(),
@@ -119,7 +118,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     _addMessage(textMessage);
-    _handleBotResponse(message.text);
+    await _handleBotResponse(message.text);
   }
 
   Widget _bubbleBuilder(

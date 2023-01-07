@@ -12,7 +12,7 @@ const String unk = '<UNKNOWN>';
 class SentimentClassifier extends Classifier {
   SentimentClassifier() : super(vocabFile, modelFile);
 
-  int classify(String rawText) {
+  Future<int> classify(String rawText) async {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
     List<List<double>> input = tokenizeInputText(rawText);
@@ -54,9 +54,8 @@ class SentimentClassifier extends Classifier {
       if (index > sentenceLen) {
         break;
       }
-      vec[index++] = dict.containsKey(tok)
-          ? dict[tok]!.toDouble()
-          : dict[unk]!.toDouble();
+      vec[index++] =
+          dict.containsKey(tok) ? dict[tok]!.toDouble() : dict[unk]!.toDouble();
     }
 
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
