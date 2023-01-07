@@ -5,16 +5,13 @@ import 'classifier.dart';
 
 const vocabFile = 'emotion_classification.vocab.txt';
 const modelFile = 'emotion_classification.tflite';
+const int _sentenceLen = 256;
+const String start = '[CLS]';
+const String pad = '[PAD]';
+const String unk = '[UNK]';
+const String sep = '[SEP]';
 
 class EmotionClassifier extends Classifier {
-  // Maximum length of sentence
-  final int _sentenceLen = 256;
-
-  final String start = '[CLS]';
-  final String pad = '[PAD]';
-  final String unk = '[UNK]';
-  final String sep = '[SEP]';
-
   final List<String> labels = [
     "sadness",
     "joy",
@@ -64,9 +61,12 @@ class EmotionClassifier extends Classifier {
       if (index > _sentenceLen) {
         break;
       }
-      vec[index++] = dict.containsKey(tok.toLowerCase())
-          ? dict[tok.toLowerCase()]!
-          : dict[unk]!;
+      var encodedWords = encodeWord(tok.toLowerCase());
+      for (var encodedWord in encodedWords) {
+        vec[index++] = dict.containsKey(encodedWord.toLowerCase())
+            ? dict[encodedWord.toLowerCase()]!
+            : dict[unk]!; 
+      }
     }
 
     // EOS
@@ -75,5 +75,27 @@ class EmotionClassifier extends Classifier {
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
     print(vec);
     return [vec];
+  }
+
+  List<String> encodeWord(String word) {
+    var tokens = [word];
+    var _word = word;
+
+    while (_word.length > 0) {
+      var i = _word.length;
+      var key = _word.substring(0, _word.length - 1);
+      while (i > 0 && !dict.containsKey(key)) {
+        i -= 1;
+      }
+      if (i == 0) {
+        return [unk];
+      }
+      tokens.add(key);
+      _word = _word.substring(i, _word.length - 1);
+      if (_word.length > 0) {
+        _word = '##$_word';
+      }
+    }
+    return tokens;
   }
 }

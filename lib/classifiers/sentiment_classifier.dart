@@ -4,15 +4,12 @@ import 'classifier.dart';
 
 const vocabFile = 'sentiment_classification.vocab.txt';
 const modelFile = 'sentiment_classification.tflite';
+const int sentenceLen = 256;
+const String start = '<START>';
+const String pad = '<PAD>';
+const String unk = '<UNKNOWN>';
 
 class SentimentClassifier extends Classifier {
-  // Maximum length of sentence
-  final int sentenceLen = 256;
-
-  final String start = '<START>';
-  final String pad = '<PAD>';
-  final String unk = '<UNKNOWN>';
-
   SentimentClassifier() : super(vocabFile, modelFile);
 
   int classify(String rawText) {
