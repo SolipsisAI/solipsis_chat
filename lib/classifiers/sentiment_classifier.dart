@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
-class Classifier {
+class SentimentClassifier {
   final _vocabFile = 'sentiment_classification.vocab.txt';
   final _modelFile = 'sentiment_classification.tflite';
 
@@ -15,7 +15,7 @@ class Classifier {
   late Map<String, int> _dict;
   late Interpreter _interpreter;
 
-  Classifier() {
+  SentimentClassifier() {
     // Load model when the classifier is initialized.
     _loadModel();
     _loadDictionary();
