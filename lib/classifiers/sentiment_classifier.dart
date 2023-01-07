@@ -54,7 +54,7 @@ class SentimentClassifier {
     var result = 0;
 
     // If value of first element in output is greater than second,
-    // then sentece is negative
+    // then the sentence is negative
     if ((output[0][0] as double) > (output[0][1] as double)) {
       result = 0;
     } else {
