@@ -7,48 +7,45 @@ TFLITE_IOS_DIR=$PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios
 BAZEL_VERSION=5.0.0
 TF_VERSION=2.9
 
+BAZEL_URL=https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
 BASE_LIB_FILENAME="libtensorflowlite_c"
 
 setup_python () {
-    pyenv install miniforge3
-
-    # Activate miniforge3
-    pyenv shell miniforge3
-
-    # Setup conda environment
-    conda create --name tensorflow # this can be any name
-
-    # Activate environment
-    conda activate tensorflow
-
-    # Install numpy
-    conda install numpy
+  cd $PROJECT_DIR
+  python -m venv venv
+  source venv/bin/activate
+  echo $(which python)
+  pip install numpy
 }
 
-setup_linux () {
-    sudo apt -y install curl gnupg
-    curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > bazel.gpg
-    sudo mv bazel.gpg /etc/apt/trusted.gpg.d/
-    echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
-
-    sudo apt -y update && sudo apt -y install bazel-$BAZEL_VERSION
-    sudo ln -s /usr/bin/bazel-$BAZEL_VERSION /usr/bin/bazel 
+setup_bazel () {
+  if ! command -v bazel &> /dev/null
+  then
+    echo "bazel-$BAZEL_VERSION not installed"
+    curl -L -o /tmp/bazel-installer.sh $BAZEL_URL
+    chmod +x /tmp/bazel-installer.sh
+    /tmp/bazel-installer.sh --user
+  fi
 }
 
 build_binaries () {
-    setup_python
+  cd $PROJECT_DIR/..
 
-    cd $PROJECT_DIR/..
+  if [ ! -d "$TF_DIR" ]; then
+      git clone https://github.com/tensorflow/tensorflow.git
+  fi
 
-    if [ ! -d "$TF_DIR" ]; then
-        git clone https://github.com/tensorflow/tensorflow.git
-    fi
+  cd $TF_DIR
 
-    cd $TF_DIR
+  git checkout r$TF_VERSION
 
-    git checkout r$TF_VERSION
-    # Must be built on x86_64
+  unamestr=$(uname)
+  if [[ "$unamestr" == 'Linux' ]]; then
+    bazel build -c opt //tensorflow/lite/c:tensorflowlite_c --define tflite_with_xnnpack=true
+  elif [[ "$unamestr" == 'Darwin' ]]; then
+    # Must be built on x86_64 on M1
     arch -x86_64 bazel build -c opt //tensorflow/lite/c:tensorflowlite_c --define tflite_with_xnnpack=true
+  fi
 }
 
 build_ios_binaries () {
@@ -89,7 +86,9 @@ if [[ "$unamestr" == 'Linux' ]]; then
     echo "Setting up on Linux"
     src_filename="${BASE_LIB_FILENAME}.so"
     dest_filename="${BASE_LIB_FILENAME}-linux.so"
-    setup_linux
+    BLOBS_DIR=${PROJECT_DIR}/blobs
+    mkdir -p $BLOBS_DIR
+    #setup_linux
 elif [[ "$unamestr" == 'Darwin' ]]; then
     echo "macos"
     src_filename="${BASE_LIB_FILENAME}.dylib"
@@ -109,7 +108,9 @@ if [[ "$INCLUDE_IOS" == 'True' || "$INCLUDE_IOS" == 'true' ]]; then
 fi
 
 if [ ! -d  "$BLOBS_DIR/$dest_filename" ]; then
-    echo "[INFO] Building macOS dependencies"
+    echo "[INFO] Installing dependencies"
+    setup_bazel
+    setup_python
     build_binaries
     copy_to_project
     echo "[SUCCESS] $dest_filename copied to $BLOBS_DIR"

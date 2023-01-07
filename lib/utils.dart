@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:math';
+import 'package:ml_linalg/linalg.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
@@ -34,4 +36,26 @@ int messageDelay(types.TextMessage message) {
 
 int currentTimestamp() {
   return DateTime.now().millisecondsSinceEpoch;
+}
+
+Vector softmax(List<double> output) {
+  // Compute the softmax
+  final vector1 = Vector.fromList(output);
+  final expVec = vector1.exp();
+  final sum = expVec.toList().reduce((a, b) => a + b);
+  final result = expVec.scalarDiv(sum);
+  print(result.max());
+  return result;
+}
+
+int argMax(Vector input) {
+  double maxVal = input.max();
+  var index = 0;
+  for (var i = 0; i < input.length; i++) {
+    if (input[i] == maxVal) {
+      index = i;
+      break;
+    }
+  }
+  return index;
 }

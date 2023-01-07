@@ -1,21 +1,32 @@
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
+import '../utils.dart';
 
-class Classifier {
-  final _vocabFile = 'text_classification_vocab.txt';
-  final _modelFile = 'text_classification.tflite';
+class EmotionClassifier {
+  final _vocabFile = 'emotion_classification.vocab.txt';
+  final _modelFile = 'emotion_classification.tflite';
 
   // Maximum length of sentence
   final int _sentenceLen = 256;
 
-  final String start = '<START>';
-  final String pad = '<PAD>';
-  final String unk = '<UNKNOWN>';
+  final String start = '[CLS]';
+  final String pad = '[PAD]';
+  final String unk = '[UNK]';
+  final String sep = '[SEP]';
 
   late Map<String, int> _dict;
   late Interpreter _interpreter;
 
-  Classifier() {
+  final List<String> labels = [
+    "sadness",
+    "joy",
+    "love",
+    "anger",
+    "fear",
+    "surprise"
+  ];
+
+  EmotionClassifier() {
     // Load model when the classifier is initialized.
     _loadModel();
     _loadDictionary();
@@ -39,41 +50,37 @@ class Classifier {
     print('Dictionary loaded successfully');
   }
 
-  int classify(String rawText) {
+  String classify(String rawText) {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
-    List<List<double>> input = tokenizeInputText(rawText);
+    List<List<int>> input = tokenizeInputText(rawText);
 
-    // output of shape [1,2].
-    var output = List<double>.filled(2, 0).reshape([1, 2]);
+    // output of shape [1,6]
+    // example: [[-1.434808373451233, -0.602688729763031, 4.8783135414123535, -1.720102071762085, -0.9065110087394714, -1.056220293045044]]
+    var output = List<double>.filled(6, 0).reshape([1, 6]);
 
     // The run method will run inference and
     // store the resulting values in output.
     _interpreter.run(input, output);
 
-    var result = 0;
-
-    // If value of first element in output is greater than second,
-    // then sentece is negative
-    if ((output[0][0] as double) > (output[0][1] as double)) {
-      result = 0;
-    } else {
-      result = 1;
-    }
-
-    return result;
+    // Compute the softmax
+    final result = softmax(output[0]);
+    print(result);
+    final labelIndex = argMax(result);
+    print("labelIndex: $labelIndex");
+    return labels[labelIndex];
   }
 
-  List<List<double>> tokenizeInputText(String text) {
+  List<List<int>> tokenizeInputText(String text) {
     // Whitespace tokenization
     final toks = text.split(' ');
 
     // Create a list of length==_sentenceLen filled with the value <pad>
-    var vec = List<double>.filled(_sentenceLen, _dict[pad]!.toDouble());
+    var vec = List<int>.filled(_sentenceLen, _dict[pad]!);
 
     var index = 0;
     if (_dict.containsKey(start)) {
-      vec[index++] = _dict[start]!.toDouble();
+      vec[index++] = _dict[start]!;
     }
 
     // For each word in sentence find corresponding index in dict
@@ -81,12 +88,16 @@ class Classifier {
       if (index > _sentenceLen) {
         break;
       }
-      vec[index++] = _dict.containsKey(tok)
-          ? _dict[tok]!.toDouble()
-          : _dict[unk]!.toDouble();
+      vec[index++] = _dict.containsKey(tok.toLowerCase())
+          ? _dict[tok.toLowerCase()]!
+          : _dict[unk]!;
     }
 
+    // EOS
+    vec[index++] = _dict[sep]!;
+
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
+    print(vec);
     return [vec];
   }
 }
