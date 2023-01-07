@@ -6,9 +6,11 @@ This is the Flutter app for Solipsis.
 
 ## Pre-requisites
 
-You need `bazel 4.2.1`.
+- `bazel-5.0.0` to be installed by `install_libs.sh`
+- `python3` which can be set up by the `install_libs.sh` script.
+- `numpy` same as above
 
-## Setup
+## Automated Setup
 
 ```shell
 # Clone the `flutter_chat_ui` fork I created and this repo to the same directory.
@@ -18,7 +20,23 @@ git clone git@github.com:SolipsisAI/solipsis_chat.git
 # Get dependencies
 cd solipsis_chat
 flutter pub get
+```
 
+Then run the script:
+```shell
+# INSTALL LIBRARIES FOR DESKTOP
+bash ./install_libs.sh
+
+# INSTALL LIBRARIES FOR IOS
+INCLUDE_IOS=true bash ./install_libs.sh
+
+# Download model file and vocab text
+bash ./download_assets.sh
+```
+
+## Python manual setup
+
+```shell
 # SETUP PYTHON
 pyenv install miniforge3
 # Activate miniforge3
@@ -29,15 +47,6 @@ conda create --name tensorflow # this can be any name
 conda activate tensorflow
 # Install numpy
 conda install numpy
-
-# INSTALL LIBRARIES FOR DESKTOP
-bash ./install_libs.sh
-
-# INSTALL LIBRARIES FOR IOS
-INCLUDE_IOS=true bash ./install_libs.sh
-
-# Download model file and vocab text
-bash ./download_assets.sh
 ```
 
 ## Running app
