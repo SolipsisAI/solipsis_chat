@@ -13,11 +13,12 @@ import 'core/bot.dart';
 import 'utils.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.isar, required this.chatMessages})
+  const ChatScreen({Key? key, required this.isar, required this.chatMessages, required this.dict})
       : super(key: key);
 
   final Isar isar;
   final List<ChatMessage> chatMessages;
+  final Map<String, int> dict;
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -37,7 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    chatBot = ChatBot();
+    chatBot = ChatBot(widget.dict);
     for (var i = 0; i < widget.chatMessages.length; i++) {
       setState(() {
         _messages.insert(

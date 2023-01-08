@@ -1,20 +1,14 @@
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
+import 'package:solipsis_chat/classifiers/emotion_classifier.dart';
 
-import '../classifiers/emotion_classifier.dart';
-import '../classifiers/sentiment_classifier.dart';
-import 'response.dart';
+final EmotionClassifier classifier = EmotionClassifier();
 
 class ChatBot {
-  late EmotionClassifier emotionClassifier;
-  late SentimentClassifier sentimentClassifier;
+  final Map<String, int> dict;
 
-  ChatBot() {
-    // Initialize classifiers
-    emotionClassifier = EmotionClassifier();
-    sentimentClassifier = SentimentClassifier();
-  }
+  ChatBot(this.dict) : super();
 
   Future<void> handleInBackground(String rawText) async {
     compute(testBackground, rawText);
@@ -22,15 +16,5 @@ class ChatBot {
 
   static void testBackground(String rawText) {
     print('rawText: $rawText');
-  }
-
-  Future<ChatResponse> handleMessage(String rawText) async {
-    final emotion = await emotionClassifier.classify(rawText);
-    final sentiment = await sentimentClassifier.classify(rawText);
-    String sentimentLabel = sentiment == 0 ? "NEGATIVE" : "POSITIVE";
-
-    String text = 'Your emotion is $emotion. Your sentiment is $sentimentLabel';
-
-    return ChatResponse(text, emotion, sentiment);
   }
 }
