@@ -17,22 +17,15 @@ const List<String> labels = [
 ];
 
 class EmotionClassifier {
-  late Interpreter interpreter;
+  final Interpreter model;
+  final Map<String, int> dict;
 
-  EmotionClassifier() {
-    _loadModel();
-  }
+  EmotionClassifier(this.model, this.dict);
 
-  void _loadModel() async {
-    // Creating the interpreter using Interpreter.fromAsset
-    interpreter = await Interpreter.fromAsset(modelFile);
-    print('Interpreter $modelFile loaded successfully');
-  }
-
-  Future<String> classify(Map<String, dynamic> params) async {
+  Future<String> classify(String rawText) async {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
-    List<List<int>> input = tokenizeInputText(params['rawText'], params['dict']);
+    List<List<int>> input = tokenizeInputText(rawText);
 
     // output of shape [1,6]
     // example: [[-1.434808373451233, -0.602688729763031, 4.8783135414123535, -1.720102071762085, -0.9065110087394714, -1.056220293045044]]
@@ -40,7 +33,7 @@ class EmotionClassifier {
 
     // The run method will run inference and
     // store the resulting values in output.
-    interpreter.run(input, output);
+    model.run(input, output);
 
     // Compute the softmax
     final result = softmax(output[0]);
@@ -48,7 +41,7 @@ class EmotionClassifier {
     return labels[labelIndex];
   }
 
-  List<List<int>> tokenizeInputText(String text, Map<String, int> dict) {
+  List<List<int>> tokenizeInputText(String text) {
     // Whitespace tokenization
     final toks = text.split(' ');
 
@@ -65,7 +58,7 @@ class EmotionClassifier {
       if (index > _sentenceLen) {
         break;
       }
-      var encoded = wordPiece(tok.toLowerCase(), dict);
+      var encoded = wordPiece(tok.toLowerCase());
       for (var word in encoded) {
         vec[index++] = dict.containsKey(word.toLowerCase())
             ? dict[word.toLowerCase()]!
@@ -80,7 +73,7 @@ class EmotionClassifier {
     return [vec];
   }
 
-  List<String> wordPiece(String input, Map<String, int> dict) {
+  List<String> wordPiece(String input) {
     var word = input;
     var tokens = [word];
 

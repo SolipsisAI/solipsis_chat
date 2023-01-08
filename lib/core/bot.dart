@@ -1,20 +1,19 @@
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
-import 'package:solipsis_chat/classifiers/emotion.dart';
-
-final EmotionClassifier classifier = EmotionClassifier();
+import 'package:tflite_flutter/tflite_flutter.dart';
+import '../classifiers/emotion.dart';
 
 class ChatBot {
   final Map<String, int> dict;
+  final Interpreter model;
+  late EmotionClassifier classifier;
 
-  ChatBot(this.dict) : super();
-
-  Future<void> handleInBackground(String rawText) async {
-    compute(classifier.classify, {'rawText': rawText, 'dict': dict});
+  ChatBot(this.dict, this.model) {
+    classifier = EmotionClassifier(model, dict);
   }
 
-  static void testBackground(String rawText) {
-    print('rawText: $rawText');
+  Future<void> handleInBackground(String rawText) async {
+    compute(classifier.classify, rawText);
   }
 }

@@ -6,19 +6,22 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
+import 'package:solipsis_chat/classifiers/emotion.dart';
 import 'package:solipsis_chat/core/response.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
 
 import 'models/chat_message.dart';
 import 'core/bot.dart';
 import 'utils.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.isar, required this.chatMessages, required this.dict})
+  const ChatScreen({Key? key, required this.isar, required this.chatMessages, required this.dict, required this.model})
       : super(key: key);
 
   final Isar isar;
   final List<ChatMessage> chatMessages;
   final Map<String, int> dict;
+  final Interpreter model;
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -38,7 +41,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    chatBot = ChatBot(widget.dict);
+    chatBot = ChatBot(widget.dict, widget.model);
     for (var i = 0; i < widget.chatMessages.length; i++) {
       setState(() {
         _messages.insert(
