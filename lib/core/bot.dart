@@ -3,7 +3,6 @@ import 'package:async_task/async_task.dart';
 
 class ChatBot {
   final List<ChatRequest> requests = [];
-
   late AsyncExecutor asyncExecutor;
   late SharedData<List<String>, List<String>> rawTexts;
 
@@ -21,6 +20,7 @@ class ChatBot {
   }
 
   void makeRequest(String rawText) {
+    rawTexts.data.add(rawText);
     requests.add(ChatRequest(rawText, rawTexts));
   }
 
