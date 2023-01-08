@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:isolate';
+
 import 'dart:developer' as logger;
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -8,11 +9,11 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
-import 'package:solipsis_chat/core/response.dart';
 
 import 'classifier.dart';
 import 'models/chat_message.dart';
 import 'utils/helpers.dart';
+import 'utils/isolate_utils.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key, required this.isar, required this.chatMessages})
@@ -25,7 +26,8 @@ class ChatScreen extends StatefulWidget {
   _ChatScreenState createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
+  bool predicting;
   bool _showTyping = false;
   int _page = 0;
 
@@ -35,11 +37,27 @@ class _ChatScreenState extends State<ChatScreen> {
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
   late Classifier classifier;
+  late IsolateUtils isolateUtils;
 
   @override
   void initState() {
     super.initState();
+    initStateAsync();
+  }
+
+  void initStateAsync() async {
+    WidgetsBinding.instance.addObserver(this);
+
+    // Spawn a new isolate
+    isolateUtils = IsolateUtils();
+    await isolateUtils.start();
+
+    // Create an instance of classifier to load model and labels
     classifier = Classifier();
+
+    // Initially predicting = false
+    predicting = false;
+
     for (var i = 0; i < widget.chatMessages.length; i++) {
       setState(() {
         _messages.insert(
@@ -80,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
 
-    final result = await classifier.predict(text);
+/*    final result = await classifier.predict(text);
 
     final message = types.TextMessage(
         author: _bot,
@@ -91,7 +109,7 @@ class _ChatScreenState extends State<ChatScreen> {
     await Future.delayed(
         Duration(seconds: messageDelay(message)), () => _showTyping = false);
 
-    _addMessage(message);
+    _addMessage(message);*/
   }
 
   void _addMessage(types.TextMessage message) async {
