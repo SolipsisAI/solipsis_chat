@@ -71,6 +71,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
   }
 
+  /// Runs inference in another isolate
+  Future<Map<String, dynamic>> inference(IsolateData isolateData) async {
+    ReceivePort responsePort = ReceivePort();
+    isolateUtils.sendPort
+        .send(isolateData..responsePort = responsePort.sendPort);
+    var results = await responsePort.first;
+    return results;
+  }
+
   Future<void> _handleEndReached() async {
     final uri = Uri.parse(
       'https://reqres.in/api/unknown?page=$_page&per_page=20',
