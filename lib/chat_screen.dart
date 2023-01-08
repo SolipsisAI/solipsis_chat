@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:isolate';
-
 import 'dart:developer' as logger;
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -37,17 +34,23 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
-  late Stream<void> messagesChanged;
-  late Classifier classifier;
-  late IsolateUtils isolateUtils;
-
   @override
   void initState() {
     super.initState();
-    initStateAsync();
+    for (var i = 0; i < widget.chatMessages.length; i++) {
+      setState(() {
+        _messages.insert(
+            0,
+            types.TextMessage(
+                author: types.User(id: widget.chatMessages[i].userUuid),
+                id: widget.chatMessages[i].uuid,
+                createdAt: widget.chatMessages[i].createdAt,
+                text: widget.chatMessages[i].text));
+      });
+    }
   }
 
-  void initStateAsync() async {
+/*  void initStateAsync() async {
     WidgetsBinding.instance.addObserver(this);
 
     // Spawn a new isolate
@@ -84,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         print(result);
       }
     });
-  }
+  }*/
 
   Widget _bubbleBuilder(
       Widget child, {
@@ -125,15 +128,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         ),
       ),
     );
-  }
-
-  /// Runs inference in another isolate
-  Future<Map<String, dynamic>> inference(IsolateData isolateData) async {
-    ReceivePort responsePort = ReceivePort();
-    isolateUtils.sendPort
-        .send(isolateData..responsePort = responsePort.sendPort);
-    var results = await responsePort.first;
-    return results;
   }
 
   Future<void> _handleEndReached() async {
@@ -190,8 +184,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     setState(() {
       _userMessages.add(message.text);
     });
-    
-    // await _handleBotResponse(message.text);
+  }
+
+  void resultsCallback(Map<String, dynamic> results) {
+    setState(() {
+      types.TextMessage message = types.TextMessage(author: _bot, id: _bot.id, text: results['label']);
+      _addMessage(message);
+    });
   }
 
   @override
