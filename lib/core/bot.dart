@@ -10,6 +10,7 @@ Future<Function> classify(EmotionClassifier classifier) async {
   return process;
 }
 
+// make this json serializable
 class ChatRequest {
   final String rawText;
   final Function process;
@@ -40,7 +41,7 @@ class ChatBot {
   }
 
   void makeRequest(String rawText) {
-    requests.add(ChatTask(rawText, processedTexts));
+    requests.add(ChatTask(ChatRequest(rawText, classifier.classify), processedTexts));
   }
 
   void processRequests() async {
@@ -54,24 +55,21 @@ class ChatBot {
 // for execution. Task instances are returned, but won't be executed and
 // will be used only to identify the task type:
 List<AsyncTask> _taskTypeRegister() =>
-    [ChatTask("", SharedData<List<String>, List<String>>([]))];
+    [ChatTask(ChatRequest("", (rawText) => {}), SharedData<List<String>, List<String>>([]))];
 
 // A task that checks if a number is prime:
-class ChatTask extends AsyncTask<String, bool> {
+class ChatTask extends AsyncTask<ChatRequest, bool> {
   // The number to check if is prime.
-  final String rawText;
+  final ChatRequest request;
 
   // A list of known primes, shared between tasks.
   final SharedData<List<String>, List<String>> processedTexts;
 
-  ChatTask(this.rawText, this.processedTexts);
-
-  @override
-  AsyncTaskChannel? channelInstantiator() => AsyncTaskChannel();
+  ChatTask(this.request, this.processedTexts);
 
   // Instantiates a `PrimeChecker` task with `parameters` and `sharedData`.
   @override
-  ChatTask instantiate(String parameters,
+  ChatTask instantiate(ChatRequest parameters,
       [Map<String, SharedData>? sharedData]) {
     return ChatTask(
       parameters,
@@ -96,14 +94,14 @@ class ChatTask extends AsyncTask<String, bool> {
 
   // The parameters of this task:
   @override
-  String parameters() {
-    return rawText;
+  ChatRequest parameters() {
+    return request;
   }
 
   // Runs the task code:
   @override
   FutureOr<bool> run() async {
-    print('rawText: $rawText');
+    print('rawText: ${request.rawText}');
     return true;
   }
 }
