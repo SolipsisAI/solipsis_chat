@@ -32,6 +32,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
+  late Stream<void> messagesChanged;
 
   @override
   void initState() {
@@ -47,46 +48,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 text: widget.chatMessages[i].text));
       });
     }
+    initStateAsync();
   }
 
-/*  void initStateAsync() async {
-    WidgetsBinding.instance.addObserver(this);
-
-    // Spawn a new isolate
-    isolateUtils = IsolateUtils();
-    await isolateUtils.start();
-
-    // Create an instance of classifier to load model and labels
-    classifier = Classifier();
-
-    // Initially predicting = false
-    predicting = false;
-
-    for (var i = 0; i < widget.chatMessages.length; i++) {
-      setState(() {
-        _messages.insert(
-            0,
-            types.TextMessage(
-                author: types.User(id: widget.chatMessages[i].userUuid),
-                id: widget.chatMessages[i].uuid,
-                createdAt: widget.chatMessages[i].createdAt,
-                text: widget.chatMessages[i].text));
-      });
-    }
-
+  void initStateAsync() async {
     messagesChanged = widget.isar.chatMessages.watchLazy();
-
-    messagesChanged.listen((event) async {
-      print('messages added');
-      if (_userMessages.isNotEmpty) {
-        print('processing');
-        final String latest = _userMessages.last;
-        var isolateData = IsolateData(latest, classifier.interpreter.address, classifier.dict);
-        final result = await inference(isolateData);
-        print(result);
-      }
-    });
-  }*/
+  }
 
   Widget _bubbleBuilder(
     Widget child, {
@@ -116,7 +83,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       body: SafeArea(
           bottom: false,
           child: Stack(children: <Widget>[
-            BotView(resultsCallback: resultsCallback),
+            BotView(resultsCallback: resultsCallback, userMessages: _userMessages, messagesChanged: messagesChanged),
             Chat(
               messages: _messages,
               onSendPressed: _handleSendPressed,

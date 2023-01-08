@@ -17,8 +17,10 @@ import '../utils/isolate_utils.dart';
 
 class BotView extends StatefulWidget {
   final Function(Map<String, dynamic> results) resultsCallback;
+  final List<String> userMessages;
+  final Stream<void> messagesChanged;
 
-  const BotView({Key? key, required this.resultsCallback}) : super(key: key);
+  const BotView({Key? key, required this.resultsCallback, required this.userMessages, required this.messagesChanged}) : super(key: key);
 
   @override
   _BotViewState createState() => _BotViewState();
@@ -44,6 +46,17 @@ class _BotViewState extends State<BotView> with WidgetsBindingObserver {
 
     // Create an instance of classifier to load model and labels
     classifier = Classifier();
+
+    widget.messagesChanged.listen((event) async {
+      print('messages added');
+      if (widget.userMessages.isNotEmpty) {
+        print('processing');
+        final String latest = widget.userMessages.last;
+        var isolateData = IsolateData(latest, classifier.interpreter.address, classifier.dict);
+        final result = await inference(isolateData);
+        print(result);
+      }
+    });
 
     // Initially predicting = false
     predicting = false;
