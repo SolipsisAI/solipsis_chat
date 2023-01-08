@@ -105,7 +105,8 @@ class ChatTask extends AsyncTask<ChatRequest, bool> {
   @override
   FutureOr<bool> run() async {
     print('rawText: ${request.rawText}');
-    request.process();
+    final result = request.process();
+    processedTexts.data.add(result);
     return true;
   }
 }
