@@ -3,13 +3,8 @@ Run inference in an Isolate so the UI isn't blocked
 Source: https://github.com/am15h/object_detection_flutter/blob/master/lib/utils/isolate_utils.dart
 * */
 
-import 'dart:io';
 import 'dart:isolate';
 
-import 'package:camera/camera.dart';
-import 'package:image/image.dart' as imageLib;
-import 'package:object_detection/tflite/classifier.dart';
-import 'package:object_detection/utils/image_utils.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 import '../classifier.dart';
@@ -39,16 +34,14 @@ class IsolateUtils {
     sendPort.send(port.sendPort);
 
     await for (final IsolateData isolateData in port) {
-      if (isolateData != null) {
-        Classifier classifier = Classifier(
-            interpreter:
-                Interpreter.fromAddress(isolateData.interpreterAddress),
-            labels: isolateData.labels);
+      Classifier classifier = Classifier(
+          interpreter:
+              Interpreter.fromAddress(isolateData.interpreterAddress),
+          dict: isolateData.dict);
 
-        Map<String, dynamic> results = classifier.predict(isolateData.rawText);
+      String result = classifier.predict(isolateData.rawText);
 
-        isolateData.responsePort.send(results);
-      }
+      isolateData.responsePort.send(result);
     }
   }
 }
@@ -56,13 +49,13 @@ class IsolateUtils {
 /// Bundles data to pass between Isolate
 class IsolateData {
   final String rawText;
-  int interpreterAddress;
-  List<String> labels;
-  SendPort responsePort;
+  late int interpreterAddress;
+  late Map<String, int> dict;
+  late SendPort responsePort;
 
   IsolateData(
     this.rawText,
     this.interpreterAddress,
-    this.labels,
+    this.dict
   );
 }
