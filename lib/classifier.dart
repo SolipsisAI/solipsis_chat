@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
+import 'utils/helpers.dart';
 
 const vocabFile = 'emotion_classification.vocab.txt';
 const modelFile = 'emotion_classification.tflite';
@@ -16,6 +17,15 @@ const String sep = '[SEP]';
 
 /// Classifier
 class Classifier {
+  final List<String> labels = [
+    "sadness",
+    "joy",
+    "love",
+    "anger",
+    "fear",
+    "surprise"
+  ];
+
   /// Instance of Interpreter
   late Interpreter _interpreter;
 
@@ -162,13 +172,11 @@ class Classifier {
     var predictElapsedTime =
         DateTime.now().millisecondsSinceEpoch - predictStartTime;
 
-    return {
-      "recognitions": recognitions,
-      "stats": Stats(
-          totalPredictTime: predictElapsedTime,
-          inferenceTime: inferenceTimeElapsed,
-          preProcessingTime: preProcessElapsedTime)
-    };
+    // Compute the softmax
+    final result = softmax(output[0]);
+    final labelIndex = argMax(result);
+
+    return labels[labelIndex];
   }
 
   /// Gets the interpreter instance
