@@ -13,9 +13,13 @@ Function classify(EmotionClassifier classifier) {
 // make this json serializable
 class ChatRequest {
   final String rawText;
-  final Function process;
+  final Function processFn;
 
-  ChatRequest(this.rawText, this.process);
+  ChatRequest(this.rawText, this.processFn);
+
+  String process() {
+    return processFn(rawText);
+  }
 }
 
 class ChatBot {
@@ -101,6 +105,7 @@ class ChatTask extends AsyncTask<ChatRequest, bool> {
   @override
   FutureOr<bool> run() async {
     print('rawText: ${request.rawText}');
+    request.process();
     return true;
   }
 }
