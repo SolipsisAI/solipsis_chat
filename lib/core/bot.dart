@@ -1,18 +1,34 @@
 import 'dart:async';
 import 'package:async_task/async_task.dart';
+import '../classifiers/emotion_classifier.dart';
 
-// TODO: initialize classifier here maybe?
-// TODO: then reference in the code
-// final classifier = EmotionClassifier();
+Future<Function> classify(EmotionClassifier classifier) async {
+  Future<String> process(String rawText) async {
+    return 'TEXT TO PROCESS: $rawText';
+  }
+
+  return process;
+}
+
+class ChatRequest {
+  final String rawText;
+  final Function process;
+
+  ChatRequest(this.rawText, this.process);
+}
 
 class ChatBot {
-  final List<ChatRequest> requests = [];
+  final List<ChatTask> requests = [];
+  late EmotionClassifier classifier;
   late AsyncExecutor asyncExecutor;
   late SharedData<List<String>, List<String>> processedTexts;
 
   ChatBot() {
     // Raw Texts
     processedTexts = SharedData<List<String>, List<String>>([]);
+
+    // Classifier
+    classifier = EmotionClassifier();
 
     // Initialize executor
     asyncExecutor = AsyncExecutor(
@@ -24,7 +40,7 @@ class ChatBot {
   }
 
   void makeRequest(String rawText) {
-    requests.add(ChatRequest(rawText, processedTexts));
+    requests.add(ChatTask(rawText, processedTexts));
   }
 
   void processRequests() async {
@@ -38,23 +54,26 @@ class ChatBot {
 // for execution. Task instances are returned, but won't be executed and
 // will be used only to identify the task type:
 List<AsyncTask> _taskTypeRegister() =>
-    [ChatRequest("", SharedData<List<String>, List<String>>([]))];
+    [ChatTask("", SharedData<List<String>, List<String>>([]))];
 
 // A task that checks if a number is prime:
-class ChatRequest extends AsyncTask<String, bool> {
+class ChatTask extends AsyncTask<String, bool> {
   // The number to check if is prime.
   final String rawText;
 
   // A list of known primes, shared between tasks.
   final SharedData<List<String>, List<String>> processedTexts;
 
-  ChatRequest(this.rawText, this.processedTexts);
+  ChatTask(this.rawText, this.processedTexts);
+
+  @override
+  AsyncTaskChannel? channelInstantiator() => AsyncTaskChannel();
 
   // Instantiates a `PrimeChecker` task with `parameters` and `sharedData`.
   @override
-  ChatRequest instantiate(String parameters,
+  ChatTask instantiate(String parameters,
       [Map<String, SharedData>? sharedData]) {
-    return ChatRequest(
+    return ChatTask(
       parameters,
       sharedData!['processedTexts'] as SharedData<List<String>, List<String>>,
     );
@@ -85,9 +104,6 @@ class ChatRequest extends AsyncTask<String, bool> {
   @override
   FutureOr<bool> run() async {
     print('rawText: $rawText');
-    await Future.delayed(
-        Duration(seconds: 5), () => print('PROCESSING completed'));
-    processedTexts.data.add('processed $rawText');
     return true;
   }
 }
