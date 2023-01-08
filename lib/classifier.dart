@@ -30,7 +30,7 @@ class Classifier {
   late Interpreter _interpreter;
 
   /// Vocab file
-  late Map<String, int> dict;
+  late Map<String, int> _dict;
 
   /// Input size of image (height = width = 300)
   static const int INPUT_SIZE = 300;
@@ -65,19 +65,17 @@ class Classifier {
 
   void loadDictionary({ Map<String, int>? dict }) async {
     if (dict != null) {
-      dict = dict;
+      _dict = dict;
     }
 
     final vocab = await rootBundle.loadString('assets/$vocabFile');
 
-    var _dict = <String, int>{};
+    _dict = <String, int>{};
     final vocabList = vocab.split('\n');
     for (var i = 0; i < vocabList.length; i++) {
       var entry = vocabList[i].trim().split(' ');
       _dict[entry[0]] = int.parse(entry[1]);
     }
-
-    dict = _dict;
     print('$vocabFile loaded successfully as Dictionary');
   }
 
@@ -90,11 +88,11 @@ class Classifier {
     final toks = text.split(' ');
 
     // Create a list of length==_sentenceLen filled with the value <pad>
-    var vec = List<int>.filled(_sentenceLen, dict[pad]!);
+    var vec = List<int>.filled(_sentenceLen, _dict[pad]!);
 
     var index = 0;
-    if (dict.containsKey(start)) {
-      vec[index++] = dict[start]!;
+    if (_dict.containsKey(start)) {
+      vec[index++] = _dict[start]!;
     }
 
     // For each word in sentence find corresponding index in dict
@@ -104,14 +102,14 @@ class Classifier {
       }
       var encoded = wordPiece(tok.toLowerCase());
       for (var word in encoded) {
-        vec[index++] = dict.containsKey(word.toLowerCase())
-            ? dict[word.toLowerCase()]!
-            : dict[unk]!;
+        vec[index++] = _dict.containsKey(word.toLowerCase())
+            ? _dict[word.toLowerCase()]!
+            : _dict[unk]!;
       }
     }
 
     // EOS
-    vec[index++] = dict[sep]!;
+    vec[index++] = _dict[sep]!;
 
     // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
     return [vec];
@@ -124,7 +122,7 @@ class Classifier {
     while (word.isNotEmpty) {
       var i = word.length;
       var key = word.substring(0, i);
-      var inVocab = dict.containsKey(key);
+      var inVocab = _dict.containsKey(key);
       while (i > 0 && !inVocab) {
         i -= 1;
       }
@@ -149,28 +147,14 @@ class Classifier {
 
   /// Runs object detection on the input image
   String predict(String rawText) {
-    var predictStartTime = DateTime.now().millisecondsSinceEpoch;
-    var preProcessStart = DateTime.now().millisecondsSinceEpoch;
-
     // Pre-process TensorImage
     List<List<int>> input = preprocessText(rawText);
 
     // Setup output
     var output = List<double>.filled(6, 0).reshape([1, 6]);
 
-    var preProcessElapsedTime =
-        DateTime.now().millisecondsSinceEpoch - preProcessStart;
-
-    var inferenceTimeStart = DateTime.now().millisecondsSinceEpoch;
-
     // run inference
     _interpreter.run(input, output);
-
-    var inferenceTimeElapsed =
-        DateTime.now().millisecondsSinceEpoch - inferenceTimeStart;
-
-    var predictElapsedTime =
-        DateTime.now().millisecondsSinceEpoch - predictStartTime;
 
     // Compute the softmax
     final result = softmax(output[0]);

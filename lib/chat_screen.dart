@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:isolate';
 import 'dart:developer' as logger;
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -8,8 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
 import 'package:solipsis_chat/core/response.dart';
 
+import 'classifier.dart';
 import 'models/chat_message.dart';
-import 'core/bot.dart';
 import 'utils/helpers.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -32,12 +34,12 @@ class _ChatScreenState extends State<ChatScreen> {
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
-  late ChatBot chatBot;
+  late Classifier classifier;
 
   @override
   void initState() {
     super.initState();
-    chatBot = ChatBot();
+    classifier = Classifier();
     for (var i = 0; i < widget.chatMessages.length; i++) {
       setState(() {
         _messages.insert(
@@ -78,13 +80,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
 
-    final response = await chatBot.handleMessage(text);
+    final result = await classifier.predict(text);
 
     final message = types.TextMessage(
         author: _bot,
         createdAt: currentTimestamp(),
         id: randomString(),
-        text: response.text);
+        text: result);
 
     await Future.delayed(
         Duration(seconds: messageDelay(message)), () => _showTyping = false);
