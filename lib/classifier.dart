@@ -85,17 +85,70 @@ class Classifier {
     print('$vocabFile loaded successfully as Dictionary');
   }
 
-  /// Pre-process the image
-  TensorImage getProcessedImage(TensorImage inputImage) {
-    padSize = max(inputImage.height, inputImage.width);
-    if (imageProcessor == null) {
-      imageProcessor = ImageProcessorBuilder()
-          .add(ResizeWithCropOrPadOp(padSize, padSize))
-          .add(ResizeOp(INPUT_SIZE, INPUT_SIZE, ResizeMethod.BILINEAR))
-          .build();
+  List<List<int>> preprocessText(String rawText) {
+    return tokenizeInputText(rawText);
+  }
+
+  List<List<int>> tokenizeInputText(String text) {
+    // Whitespace tokenization
+    final toks = text.split(' ');
+
+    // Create a list of length==_sentenceLen filled with the value <pad>
+    var vec = List<int>.filled(_sentenceLen, dict[pad]!);
+
+    var index = 0;
+    if (dict.containsKey(start)) {
+      vec[index++] = dict[start]!;
     }
-    inputImage = imageProcessor.process(inputImage);
-    return inputImage;
+
+    // For each word in sentence find corresponding index in dict
+    for (var tok in toks) {
+      if (index > _sentenceLen) {
+        break;
+      }
+      var encoded = wordPiece(tok.toLowerCase());
+      for (var word in encoded) {
+        vec[index++] = dict.containsKey(word.toLowerCase())
+            ? dict[word.toLowerCase()]!
+            : dict[unk]!;
+      }
+    }
+
+    // EOS
+    vec[index++] = dict[sep]!;
+
+    // returning List<List<double>> as our interpreter input tensor expects the shape, [1,256]
+    return [vec];
+  }
+
+  List<String> wordPiece(String input) {
+    var word = input;
+    var tokens = [word];
+
+    while (word.isNotEmpty) {
+      var i = word.length;
+      var key = word.substring(0, i);
+      var inVocab = dict.containsKey(key);
+      while (i > 0 && !inVocab) {
+        i -= 1;
+      }
+
+      if (i == 0) {
+        return [unk];
+      }
+
+      if (!tokens.contains(key)) {
+        tokens.add(key);
+      }
+
+      word = (i + 1 < key.length) ? key.substring(i + 1, key.length) : "";
+
+      if (word.isNotEmpty) {
+        word = '##$word';
+      }
+    }
+
+    return tokens;
   }
 
   /// Runs object detection on the input image
@@ -198,7 +251,4 @@ class Classifier {
 
   /// Gets the interpreter instance
   Interpreter get interpreter => _interpreter;
-
-  /// Gets the loaded labels
-  List<String> get labels => _labels;
 }
