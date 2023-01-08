@@ -1,3 +1,4 @@
+import 'dart:core';
 import 'dart:developer' as logger;
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   bool _showTyping = false;
   int _page = 0;
+  bool _userIsTyping = false;
   final Debouncer _debouncer = Debouncer(delay: 500);
 
   List<types.Message> _messages = [];
@@ -65,6 +67,19 @@ class _ChatScreenState extends State<ChatScreen> {
         final rawText = _userMessages.last;
         _debouncer.run(() => _handleBotResponse(rawText));
       }
+    });
+  }
+
+  void _handleUserTyping(String text) {
+    if (!_userIsTyping) {
+      toggleUserIsTyping();
+    }
+    print('user text: $text');
+  }
+
+  void toggleUserIsTyping() {
+    setState(() {
+      _userIsTyping = !_userIsTyping;
     });
   }
 
@@ -176,6 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
           showTyping: _showTyping,
           showUserAvatars: true,
           showUserNames: true,
+          onTextChanged: _handleUserTyping,
         ),
       ),
     );
