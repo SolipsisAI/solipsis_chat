@@ -6,6 +6,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
+import 'package:queue/queue.dart';
 import 'package:solipsis_chat/core/response.dart';
 
 import 'models/chat_message.dart';
@@ -28,7 +29,7 @@ class _ChatScreenState extends State<ChatScreen> {
   int _page = 0;
 
   List<types.Message> _messages = [];
-  List<String> _userMessages = [];
+  final Queue _userMessages = Queue(delay: Duration(milliseconds: 10));
 
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
@@ -135,7 +136,9 @@ class _ChatScreenState extends State<ChatScreen> {
     _addMessage(textMessage);
 
     setState(() {
-      _userMessages.add(message.text);
+      _userMessages.add(() async {
+        return message.text;
+      });
     });
   }
 
