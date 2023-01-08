@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'chat_screen.dart';
 import 'models/chat_message.dart';
 import 'models/chat_user.dart';
+import 'inference.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +13,13 @@ void main() async {
   final Isar _isar = await Isar.open(
       schemas: [ChatMessageSchema, ChatUserSchema], directory: dir.path);
   final chatMessages = await _isar.chatMessages.where().findAll();
+
+  // listen to changes in the database
+  final Stream<void> messagesChanged = _isar.chatMessages.watchLazy();
+  messagesChanged.listen((event) {
+    print('added message');
+  });
+
   runApp(SolipsisChat(isar: _isar, chatMessages: chatMessages));
 }
 

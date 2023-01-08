@@ -9,7 +9,6 @@ import 'package:isar/isar.dart';
 
 import 'models/chat_message.dart';
 import 'utils/helpers.dart';
-import 'inference.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key, required this.isar, required this.chatMessages})
@@ -33,13 +32,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
-  late Stream<void> messagesChanged;
-  late Inference inferencer;
-
   @override
   void initState() {
     super.initState();
-    inferencer = Inference();
     for (var i = 0; i < widget.chatMessages.length; i++) {
       setState(() {
         _messages.insert(
@@ -51,18 +46,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 text: widget.chatMessages[i].text));
       });
     }
-    initStateAsync();
-  }
-
-  void initStateAsync() async {
-    messagesChanged = widget.isar.chatMessages.watchLazy();
-    messagesChanged.listen((event) async {
-      print('messages added');
-      if (_userMessages.isNotEmpty) {
-        print('processing');
-        // TODO:
-      }
-    });
   }
 
   Widget _bubbleBuilder(

@@ -12,7 +12,7 @@ class Inference {
     classifier = Classifier();
   }
 
-  Future<Map<String, dynamic>> inference(String rawText) async {
+  Future<Map<String, dynamic>> run(String rawText) async {
     var isolateData = IsolateData(rawText, classifier.interpreter.address, classifier.dict);
     ReceivePort responsePort = ReceivePort();
     isolateUtils.sendPort
