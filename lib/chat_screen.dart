@@ -6,12 +6,12 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
-import 'package:queue/queue.dart';
 import 'package:solipsis_chat/core/response.dart';
 
 import 'models/chat_message.dart';
 import 'core/bot.dart';
 import 'utils.dart';
+import 'debouncer.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key, required this.isar, required this.chatMessages})
@@ -27,6 +27,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   bool _showTyping = false;
   int _page = 0;
+  final Debouncer _debouncer = Debouncer(delay: 500);
 
   List<types.Message> _messages = [];
   List<String> _userMessages = [];
@@ -62,13 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
       print('messages added');
       if (_userMessages.isNotEmpty) {
         final rawText = _userMessages.last;
-        Future.delayed(Duration(milliseconds: 500), () {
-          _showTyping = true;
-          print('PROCESSING');
-          _handleBotResponse(rawText);
-          _showTyping = false;
-        });
-        print('processed');
+        _debouncer.run(() => _handleBotResponse(rawText));
       }
     });
   }
