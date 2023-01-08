@@ -1,5 +1,5 @@
 import 'package:tflite_flutter/tflite_flutter.dart';
-import '../utils.dart';
+import '../utils/helpers.dart';
 
 import 'classifier.dart';
 

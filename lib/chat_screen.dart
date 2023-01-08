@@ -10,7 +10,7 @@ import 'package:solipsis_chat/core/response.dart';
 
 import 'models/chat_message.dart';
 import 'core/bot.dart';
-import 'utils.dart';
+import 'utils/helpers.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key, required this.isar, required this.chatMessages})
