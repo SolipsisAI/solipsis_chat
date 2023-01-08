@@ -7,10 +7,9 @@ import 'package:bubble/bubble.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
 
-import 'classifier.dart';
 import 'models/chat_message.dart';
 import 'utils/helpers.dart';
-import 'utils/isolate_utils.dart';
+import 'ui/bot_view.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key, required this.isar, required this.chatMessages})
@@ -90,14 +89,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }*/
 
   Widget _bubbleBuilder(
-      Widget child, {
-        required message,
-        required nextMessageInGroup,
-      }) {
+    Widget child, {
+    required message,
+    required nextMessageInGroup,
+  }) {
     return Bubble(
       child: child,
       color: _user.id != message.author.id ||
-          message.type == types.MessageType.image
+              message.type == types.MessageType.image
           ? const Color(0xfff5f5f7)
           : const Color(0xff6f61e8),
       margin: nextMessageInGroup
@@ -106,8 +105,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       nip: nextMessageInGroup
           ? BubbleNip.no
           : _user.id != message.author.id
-          ? BubbleNip.leftBottom
-          : BubbleNip.rightBottom,
+              ? BubbleNip.leftBottom
+              : BubbleNip.rightBottom,
     );
   }
 
@@ -115,18 +114,20 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        bottom: false,
-        child: Chat(
-          messages: _messages,
-          onSendPressed: _handleSendPressed,
-          user: _user,
-          bubbleBuilder: _bubbleBuilder,
-          onEndReached: _handleEndReached,
-          showTyping: _showTyping,
-          showUserAvatars: true,
-          showUserNames: true,
-        ),
-      ),
+          bottom: false,
+          child: Stack(children: <Widget>[
+            BotView(resultsCallback: resultsCallback),
+            Chat(
+              messages: _messages,
+              onSendPressed: _handleSendPressed,
+              user: _user,
+              bubbleBuilder: _bubbleBuilder,
+              onEndReached: _handleEndReached,
+              showTyping: _showTyping,
+              showUserAvatars: true,
+              showUserNames: true,
+            ),
+          ])),
     );
   }
 
@@ -188,7 +189,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void resultsCallback(Map<String, dynamic> results) {
     setState(() {
-      types.TextMessage message = types.TextMessage(author: _bot, id: _bot.id, text: results['label']);
+      types.TextMessage message =
+          types.TextMessage(author: _bot, id: _bot.id, text: results['label']);
       _addMessage(message);
     });
   }
