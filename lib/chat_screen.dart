@@ -29,7 +29,7 @@ class _ChatScreenState extends State<ChatScreen> {
   int _page = 0;
 
   List<types.Message> _messages = [];
-  final Queue _userMessages = Queue(delay: Duration(milliseconds: 10));
+  List<String> _userMessages = [];
 
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
@@ -61,8 +61,12 @@ class _ChatScreenState extends State<ChatScreen> {
     messagesUpdated.listen((event) {
       print('messages added');
       if (_userMessages.isNotEmpty) {
-        print('process');
-        _handleBotResponse(_userMessages.last);
+        final rawText = _userMessages.last;
+        Future.delayed(Duration(milliseconds: 500), () {
+          print('PROCESSING');
+          _handleBotResponse(rawText);
+        });
+        print('processed');
       }
     });
   }
@@ -104,6 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     setState(() {
       _addMessage(message);
+      _userMessages.removeAt(0);
     });
     _showTyping = false;
   }
@@ -136,9 +141,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _addMessage(textMessage);
 
     setState(() {
-      _userMessages.add(() async {
-        return message.text;
-      });
+      _userMessages.add(message.text);
     });
   }
 
