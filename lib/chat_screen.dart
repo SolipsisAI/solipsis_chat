@@ -32,10 +32,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   int _page = 0;
 
   List<types.Message> _messages = [];
+  List<String> _userMessages = [];
 
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
+  late Stream<void> messagesChanged;
   late Classifier classifier;
   late IsolateUtils isolateUtils;
 
@@ -69,6 +71,61 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 text: widget.chatMessages[i].text));
       });
     }
+
+    messagesChanged = widget.isar.chatMessages.watchLazy();
+    messagesChanged.listen((event) async {
+      print('messages added');
+      setState(() async {
+        predicting = true;
+        if (_userMessages.isNotEmpty) {
+          final String latest = _userMessages.last;
+          var isolateData = IsolateData(latest, classifier.interpreter.address, classifier.dict);
+          final result = await inference(isolateData);
+          print(result);
+        }
+      });
+    });
+  }
+
+  Widget _bubbleBuilder(
+      Widget child, {
+        required message,
+        required nextMessageInGroup,
+      }) {
+    return Bubble(
+      child: child,
+      color: _user.id != message.author.id ||
+          message.type == types.MessageType.image
+          ? const Color(0xfff5f5f7)
+          : const Color(0xff6f61e8),
+      margin: nextMessageInGroup
+          ? const BubbleEdges.symmetric(horizontal: 6)
+          : null,
+      nip: nextMessageInGroup
+          ? BubbleNip.no
+          : _user.id != message.author.id
+          ? BubbleNip.leftBottom
+          : BubbleNip.rightBottom,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        bottom: false,
+        child: Chat(
+          messages: _messages,
+          onSendPressed: _handleSendPressed,
+          user: _user,
+          bubbleBuilder: _bubbleBuilder,
+          onEndReached: _handleEndReached,
+          showTyping: _showTyping,
+          showUserAvatars: true,
+          showUserNames: true,
+        ),
+      ),
+    );
   }
 
   /// Runs inference in another isolate
@@ -104,27 +161,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> _handleBotResponse(String text) async {
-    _showTyping = true;
-    var isolateData = IsolateData(text, classifier.interpreter.address, classifier.dict);
-    final result = await inference(isolateData);
-    print(result);
-
-/*    final result = await classifier.predict(text);
-
-    final message = types.TextMessage(
-        author: _bot,
-        createdAt: currentTimestamp(),
-        id: randomString(),
-        text: result);
-
-    await Future.delayed(
-        Duration(seconds: messageDelay(message)), () => _showTyping = false);
-
-    _addMessage(message);*/
-    _showTyping = false;
-  }
-
   void _addMessage(types.TextMessage message) async {
     final newMessage = ChatMessage()
       ..createdAt = message.createdAt!
@@ -151,47 +187,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
 
     _addMessage(textMessage);
-    await _handleBotResponse(message.text);
-  }
-
-  Widget _bubbleBuilder(
-    Widget child, {
-    required message,
-    required nextMessageInGroup,
-  }) {
-    return Bubble(
-      child: child,
-      color: _user.id != message.author.id ||
-              message.type == types.MessageType.image
-          ? const Color(0xfff5f5f7)
-          : const Color(0xff6f61e8),
-      margin: nextMessageInGroup
-          ? const BubbleEdges.symmetric(horizontal: 6)
-          : null,
-      nip: nextMessageInGroup
-          ? BubbleNip.no
-          : _user.id != message.author.id
-              ? BubbleNip.leftBottom
-              : BubbleNip.rightBottom,
-    );
+    // await _handleBotResponse(message.text);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: Chat(
-          messages: _messages,
-          onSendPressed: _handleSendPressed,
-          user: _user,
-          bubbleBuilder: _bubbleBuilder,
-          onEndReached: _handleEndReached,
-          showTyping: _showTyping,
-          showUserAvatars: true,
-          showUserNames: true,
-        ),
-      ),
-    );
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 }
