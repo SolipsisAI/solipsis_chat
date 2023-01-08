@@ -4,11 +4,11 @@ import 'package:async_task/async_task.dart';
 class ChatBot {
   final List<ChatRequest> requests = [];
   late AsyncExecutor asyncExecutor;
-  late SharedData<List<String>, List<String>> rawTexts;
+  late SharedData<List<String>, List<String>> processedTexts;
 
   ChatBot() {
     // Raw Texts
-    rawTexts = SharedData<List<String>, List<String>>([]);
+    processedTexts = SharedData<List<String>, List<String>>([]);
 
     // Initialize executor
     asyncExecutor = AsyncExecutor(
@@ -20,8 +20,7 @@ class ChatBot {
   }
 
   void makeRequest(String rawText) {
-    rawTexts.data.add(rawText);
-    requests.add(ChatRequest(rawText, rawTexts));
+    requests.add(ChatRequest(rawText, processedTexts));
   }
 
   void processRequests() async {
@@ -43,9 +42,9 @@ class ChatRequest extends AsyncTask<String, bool> {
   final String rawText;
 
   // A list of known primes, shared between tasks.
-  final SharedData<List<String>, List<String>> rawTexts;
+  final SharedData<List<String>, List<String>> processedTexts;
 
-  ChatRequest(this.rawText, this.rawTexts);
+  ChatRequest(this.rawText, this.processedTexts);
 
   // Instantiates a `PrimeChecker` task with `parameters` and `sharedData`.
   @override
@@ -53,19 +52,19 @@ class ChatRequest extends AsyncTask<String, bool> {
       [Map<String, SharedData>? sharedData]) {
     return ChatRequest(
       parameters,
-      sharedData!['rawTexts'] as SharedData<List<String>, List<String>>,
+      sharedData!['processedTexts'] as SharedData<List<String>, List<String>>,
     );
   }
 
   // The `SharedData` of this task.
   @override
-  Map<String, SharedData> sharedData() => {'rawTexts': rawTexts};
+  Map<String, SharedData> sharedData() => {'processedTexts': processedTexts};
 
   // Loads the `SharedData` from `serial` for each key.
   @override
   SharedData<List<String>, List<String>> loadSharedData(String key, dynamic serial) {
     switch (key) {
-      case 'rawTexts':
+      case 'processedTexts':
         return SharedData<List<String>, List<String>>(serial);
       default:
         throw StateError('Unknown key: $key');
@@ -82,6 +81,7 @@ class ChatRequest extends AsyncTask<String, bool> {
   @override
   FutureOr<bool> run() {
     print('rawText: $rawText');
+    processedTexts.data.add('processed $rawText');
     return true;
   }
 }
