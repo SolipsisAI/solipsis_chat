@@ -77,6 +77,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     messagesChanged.listen((event) async {
       print('messages added');
       if (_userMessages.isNotEmpty) {
+        print('processing');
         final String latest = _userMessages.last;
         var isolateData = IsolateData(latest, classifier.interpreter.address, classifier.dict);
         final result = await inference(isolateData);
@@ -185,6 +186,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
 
     _addMessage(textMessage);
+
+    setState(() {
+      _userMessages.add(message.text);
+    });
+    
     // await _handleBotResponse(message.text);
   }
 
