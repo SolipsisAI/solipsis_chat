@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:async_task/async_task.dart';
 import '../classifiers/emotion_classifier.dart';
 
-Future<Function> classify(EmotionClassifier classifier) async {
-  Future<String> process(String rawText) async {
+Function classify(EmotionClassifier classifier) {
+  String process(String rawText) {
     return 'TEXT TO PROCESS: $rawText';
   }
 
@@ -25,13 +25,12 @@ class ChatBot {
   late SharedData<List<String>, List<String>> processedTexts;
 
   ChatBot() {
+    classifier = EmotionClassifier();
+
     // Raw Texts
     processedTexts = SharedData<List<String>, List<String>>([]);
 
-    // Classifier
-    classifier = EmotionClassifier();
-
-    // Initialize executor
+   // Initialize executor
     asyncExecutor = AsyncExecutor(
       sequential: true,
       parallelism: 2,
@@ -41,7 +40,7 @@ class ChatBot {
   }
 
   void makeRequest(String rawText) {
-    requests.add(ChatTask(ChatRequest(rawText, classifier.classify), processedTexts));
+    requests.add(ChatTask(ChatRequest(rawText, classify(classifier)), processedTexts));
   }
 
   void processRequests() async {
