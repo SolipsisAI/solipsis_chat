@@ -78,8 +78,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
 
-    final response = await chatBot.handleMessage(text);
-
+    chatBot.handleInBackground(text);
+/*
     final message = types.TextMessage(
         author: _bot,
         createdAt: currentTimestamp(),
@@ -89,7 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
     await Future.delayed(
         Duration(seconds: messageDelay(message)), () => _showTyping = false);
 
-    _addMessage(message);
+    _addMessage(message);*/
   }
 
   void _addMessage(types.TextMessage message) async {
