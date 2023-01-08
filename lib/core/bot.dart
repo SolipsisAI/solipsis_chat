@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:async_task/async_task.dart';
 
+// TODO: initialize classifier here maybe?
+// TODO: then reference in the code
+// final classifier = EmotionClassifier();
+
 class ChatBot {
   final List<ChatRequest> requests = [];
   late AsyncExecutor asyncExecutor;
@@ -79,8 +83,10 @@ class ChatRequest extends AsyncTask<String, bool> {
 
   // Runs the task code:
   @override
-  FutureOr<bool> run() {
+  FutureOr<bool> run() async {
     print('rawText: $rawText');
+    await Future.delayed(
+        Duration(seconds: 5), () => print('PROCESSING completed'));
     processedTexts.data.add('processed $rawText');
     return true;
   }
