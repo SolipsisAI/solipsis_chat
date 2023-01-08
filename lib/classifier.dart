@@ -68,6 +68,10 @@ class Classifier {
   }
 
   void loadDictionary({ Map<String, int>? dict }) async {
+    if (dict != null) {
+      dict = dict;
+    }
+
     final vocab = await rootBundle.loadString('assets/$vocabFile');
 
     var _dict = <String, int>{};
