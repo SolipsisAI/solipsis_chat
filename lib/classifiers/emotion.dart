@@ -1,6 +1,7 @@
 import 'package:tflite_flutter/tflite_flutter.dart';
 import '../utils.dart';
 
+const modelFile = 'emotion_classification.tflite';
 const int _sentenceLen = 256;
 const String start = '[CLS]';
 const String pad = '[PAD]';
@@ -16,11 +17,9 @@ const List<String> labels = [
 ];
 
 class EmotionClassifier {
-  late String modelFile;
-
   late Interpreter interpreter;
 
-  EmotionClassifier(this.modelFile) {
+  EmotionClassifier() {
     _loadModel();
   }
 
@@ -30,10 +29,10 @@ class EmotionClassifier {
     print('Interpreter $modelFile loaded successfully');
   }
 
-  Future<String> classify(String rawText, Map<String, int> dict) async {
+  Future<String> classify(Map<String, dynamic> params) async {
     // tokenizeInputText returns List<List<double>>
     // of shape [1, 256].
-    List<List<int>> input = tokenizeInputText(rawText, dict);
+    List<List<int>> input = tokenizeInputText(params['rawText'], params['dict']);
 
     // output of shape [1,6]
     // example: [[-1.434808373451233, -0.602688729763031, 4.8783135414123535, -1.720102071762085, -0.9065110087394714, -1.056220293045044]]

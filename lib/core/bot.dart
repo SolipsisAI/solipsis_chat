@@ -1,7 +1,7 @@
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
-import 'package:solipsis_chat/classifiers/emotion_classifier.dart';
+import 'package:solipsis_chat/classifiers/emotion.dart';
 
 final EmotionClassifier classifier = EmotionClassifier();
 
@@ -11,7 +11,7 @@ class ChatBot {
   ChatBot(this.dict) : super();
 
   Future<void> handleInBackground(String rawText) async {
-    compute(testBackground, rawText);
+    compute(classifier.classify, {'rawText': rawText, 'dict': dict});
   }
 
   static void testBackground(String rawText) {
