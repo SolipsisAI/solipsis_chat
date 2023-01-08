@@ -73,17 +73,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
 
     messagesChanged = widget.isar.chatMessages.watchLazy();
+
     messagesChanged.listen((event) async {
       print('messages added');
-      setState(() async {
-        predicting = true;
-        if (_userMessages.isNotEmpty) {
-          final String latest = _userMessages.last;
-          var isolateData = IsolateData(latest, classifier.interpreter.address, classifier.dict);
-          final result = await inference(isolateData);
-          print(result);
-        }
-      });
+      if (_userMessages.isNotEmpty) {
+        final String latest = _userMessages.last;
+        var isolateData = IsolateData(latest, classifier.interpreter.address, classifier.dict);
+        final result = await inference(isolateData);
+        print(result);
+      }
     });
   }
 
