@@ -63,8 +63,10 @@ class _ChatScreenState extends State<ChatScreen> {
       if (_userMessages.isNotEmpty) {
         final rawText = _userMessages.last;
         Future.delayed(Duration(milliseconds: 500), () {
+          _showTyping = true;
           print('PROCESSING');
           _handleBotResponse(rawText);
+          _showTyping = false;
         });
         print('processed');
       }
@@ -96,7 +98,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _handleBotResponse(String text) async {
-    _showTyping = true;
     final String rawText = _userMessages.last;
     final ChatResponse response = await chatBot.handleMessage(rawText);
     final types.TextMessage message = types.TextMessage(
@@ -110,7 +111,6 @@ class _ChatScreenState extends State<ChatScreen> {
       _addMessage(message);
       _userMessages.removeAt(0);
     });
-    _showTyping = false;
   }
 
   void _addMessage(types.TextMessage message) async {
