@@ -146,7 +146,7 @@ class Classifier {
   }
 
   /// Runs object detection on the input image
-  String predict(String rawText) {
+  Map<String, dynamic> predict(String rawText) {
     // Pre-process TensorImage
     List<List<int>> input = preprocessText(rawText);
 
@@ -160,9 +160,12 @@ class Classifier {
     final result = softmax(output[0]);
     final labelIndex = argMax(result);
 
-    return labels[labelIndex];
+    return {'label': labels[labelIndex]};
   }
 
   /// Gets the interpreter instance
   Interpreter get interpreter => _interpreter;
+
+  /// Gets the interpreter instance
+  Map<String, int > get dict => _dict;
 }

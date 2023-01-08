@@ -39,7 +39,7 @@ class IsolateUtils {
               Interpreter.fromAddress(isolateData.interpreterAddress),
           dict: isolateData.dict);
 
-      String result = classifier.predict(isolateData.rawText);
+      Map<String, dynamic> result = classifier.predict(isolateData.rawText);
 
       isolateData.responsePort.send(result);
     }

@@ -27,7 +27,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
-  bool predicting;
+  bool predicting = false;
   bool _showTyping = false;
   int _page = 0;
 
@@ -106,6 +106,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
+    var isolateData = IsolateData(text, classifier.interpreter.address, classifier.dict);
+    final result = await inference(isolateData);
+    print(result);
 
 /*    final result = await classifier.predict(text);
 
@@ -119,6 +122,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         Duration(seconds: messageDelay(message)), () => _showTyping = false);
 
     _addMessage(message);*/
+    _showTyping = false;
   }
 
   void _addMessage(types.TextMessage message) async {
