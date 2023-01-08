@@ -28,11 +28,13 @@ class _ChatScreenState extends State<ChatScreen> {
   int _page = 0;
 
   List<types.Message> _messages = [];
+  List<String> _userMessages = [];
 
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
   late ChatBot chatBot;
+  late Stream<void> messagesUpdated;
 
   @override
   void initState() {
@@ -49,6 +51,19 @@ class _ChatScreenState extends State<ChatScreen> {
                 text: widget.chatMessages[i].text));
       });
     }
+    initStateAsync();
+  }
+
+  void initStateAsync() async {
+    messagesUpdated = widget.isar.chatMessages.watchLazy();
+
+    messagesUpdated.listen((event) {
+      print('messages added');
+      if (_userMessages.isNotEmpty) {
+        print('process');
+        _handleBotResponse(_userMessages.last);
+      }
+    });
   }
 
   Future<void> _handleEndReached() async {
@@ -77,19 +92,19 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _handleBotResponse(String text) async {
     _showTyping = true;
-
-    final response = await chatBot.handleMessage(text);
-
-    final message = types.TextMessage(
-        author: _bot,
-        createdAt: currentTimestamp(),
+    final String rawText = _userMessages.last;
+    final ChatResponse response = await chatBot.handleMessage(rawText);
+    final types.TextMessage message = types.TextMessage(
         id: randomString(),
-        text: response.text);
+        author: _bot,
+        text: response.text,
+        createdAt: currentTimestamp());
+    print(response.text);
 
-    await Future.delayed(
-        Duration(seconds: messageDelay(message)), () => _showTyping = false);
-
-    _addMessage(message);
+    setState(() {
+      _addMessage(message);
+    });
+    _showTyping = false;
   }
 
   void _addMessage(types.TextMessage message) async {
@@ -118,7 +133,10 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     _addMessage(textMessage);
-    await _handleBotResponse(message.text);
+
+    setState(() {
+      _userMessages.add(message.text);
+    });
   }
 
   Widget _bubbleBuilder(
