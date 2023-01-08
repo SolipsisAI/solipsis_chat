@@ -16,9 +16,9 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 class IsolateUtils {
   static const String DEBUG_NAME = "InferenceIsolate";
 
-  Isolate _isolate;
-  ReceivePort _receivePort = ReceivePort();
-  SendPort _sendPort;
+  late Isolate _isolate;
+  final ReceivePort _receivePort = ReceivePort();
+  late SendPort _sendPort;
 
   SendPort get sendPort => _sendPort;
 
