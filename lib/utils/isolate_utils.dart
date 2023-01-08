@@ -12,6 +12,8 @@ import 'package:object_detection/tflite/classifier.dart';
 import 'package:object_detection/utils/image_utils.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
+import '../classifier.dart';
+
 /// Manages separate Isolate instance for inference
 class IsolateUtils {
   static const String DEBUG_NAME = "InferenceIsolate";
@@ -42,12 +44,9 @@ class IsolateUtils {
             interpreter:
                 Interpreter.fromAddress(isolateData.interpreterAddress),
             labels: isolateData.labels);
-        imageLib.Image image =
-            ImageUtils.convertCameraImage(isolateData.cameraImage);
-        if (Platform.isAndroid) {
-          image = imageLib.copyRotate(image, 90);
-        }
-        Map<String, dynamic> results = classifier.predict(image);
+
+        Map<String, dynamic> results = classifier.predict(isolateData.rawText);
+
         isolateData.responsePort.send(results);
       }
     }
@@ -56,13 +55,13 @@ class IsolateUtils {
 
 /// Bundles data to pass between Isolate
 class IsolateData {
-  CameraImage cameraImage;
+  final String rawText;
   int interpreterAddress;
   List<String> labels;
   SendPort responsePort;
 
   IsolateData(
-    this.cameraImage,
+    this.rawText,
     this.interpreterAddress,
     this.labels,
   );

@@ -3,23 +3,24 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as imageLib;
-import 'package:object_detection/tflite/recognition.dart';
+import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
-import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 
-import 'stats.dart';
+const vocabFile = 'emotion_classification.vocab.txt';
+const modelFile = 'emotion_classification.tflite';
+const int _sentenceLen = 256;
+const String start = '[CLS]';
+const String pad = '[PAD]';
+const String unk = '[UNK]';
+const String sep = '[SEP]';
 
 /// Classifier
 class Classifier {
   /// Instance of Interpreter
-  Interpreter _interpreter;
+  late Interpreter _interpreter;
 
-  /// Labels file loaded as list
-  List<String> _labels;
-
-  static const String MODEL_FILE_NAME = "detect.tflite";
-  static const String LABEL_FILE_NAME = "labelmap.txt";
+  /// Vocab file
+  late Map<String, int> dict;
 
   /// Input size of image (height = width = 300)
   static const int INPUT_SIZE = 300;
@@ -27,37 +28,32 @@ class Classifier {
   /// Result score threshold
   static const double THRESHOLD = 0.5;
 
-  /// [ImageProcessor] used to pre-process the image
-  ImageProcessor imageProcessor;
-
   /// Padding the image to transform into square
-  int padSize;
+  late int padSize;
 
   /// Shapes of output tensors
-  List<List<int>> _outputShapes;
+  late List<List<int>> _outputShapes;
 
   /// Types of output tensors
-  List<TfLiteType> _outputTypes;
+  late List<TfLiteType> _outputTypes;
 
   /// Number of results to show
   static const int NUM_RESULTS = 10;
 
-  Classifier({
-    Interpreter interpreter,
-    List<String> labels,
-  }) {
+  Classifier({Interpreter? interpreter, Map<String, int>? dict}) {
     loadModel(interpreter: interpreter);
-    loadLabels(labels: labels);
+    loadDictionary(dict: dict);
   }
 
   /// Loads interpreter from asset
-  void loadModel({Interpreter interpreter}) async {
+  void loadModel({ Interpreter? interpreter }) async {
     try {
-      _interpreter = interpreter ??
-          await Interpreter.fromAsset(
-            MODEL_FILE_NAME,
-            options: InterpreterOptions()..threads = 4,
-          );
+      _interpreter =
+          interpreter ??
+            await Interpreter.fromAsset(
+              modelFile,
+              options: InterpreterOptions()..threads = 4,
+            );
 
       var outputTensors = _interpreter.getOutputTensors();
       _outputShapes = [];
@@ -71,14 +67,18 @@ class Classifier {
     }
   }
 
-  /// Loads labels from assets
-  void loadLabels({List<String> labels}) async {
-    try {
-      _labels =
-          labels ?? await FileUtil.loadLabels("assets/" + LABEL_FILE_NAME);
-    } catch (e) {
-      print("Error while loading labels: $e");
+  void loadDictionary({ Map<String, int>? dict }) async {
+    final vocab = await rootBundle.loadString('assets/$vocabFile');
+
+    var _dict = <String, int>{};
+    final vocabList = vocab.split('\n');
+    for (var i = 0; i < vocabList.length; i++) {
+      var entry = vocabList[i].trim().split(' ');
+      _dict[entry[0]] = int.parse(entry[1]);
     }
+
+    dict = _dict;
+    print('$vocabFile loaded successfully as Dictionary');
   }
 
   /// Pre-process the image
