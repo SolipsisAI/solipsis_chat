@@ -15,10 +15,10 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   /// Results to draw bounding boxes
-  List<Recognition> results;
+  late List<Recognition> results;
 
   /// Realtime stats
-  Stats stats;
+  late Stats stats;
 
   /// Scaffold Key
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
