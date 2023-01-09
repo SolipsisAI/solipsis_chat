@@ -30,6 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
   int _page = 0;
   bool _userIsTyping = false;
   final Debouncer _debouncer = Debouncer(delay: 500);
+  final Stopwatch _stopwatch = Stopwatch();
 
   List<types.Message> _messages = [];
   List<String> _userMessages = [];
@@ -74,7 +75,9 @@ class _ChatScreenState extends State<ChatScreen> {
     if (!_userIsTyping) {
       toggleUserIsTyping();
     }
-    print('user text: $text');
+    if (!_stopwatch.isRunning) {
+      _stopwatch.start();
+    }
   }
 
   void toggleUserIsTyping() {
@@ -153,6 +156,11 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _userMessages.add(message.text);
     });
+    _stopwatch.stop();
+
+    print(_stopwatch.elapsedMilliseconds);
+
+    _stopwatch.reset();
   }
 
   Widget _bubbleBuilder(
