@@ -156,10 +156,10 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _userMessages.add(message.text);
     });
+
+    toggleUserIsTyping();
     _stopwatch.stop();
-
-    print(_stopwatch.elapsedMilliseconds);
-
+    print('${_stopwatch.elapsedMilliseconds} ms elapsed');
     _stopwatch.reset();
   }
 
