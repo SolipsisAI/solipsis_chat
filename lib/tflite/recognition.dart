@@ -18,7 +18,7 @@ class Recognition {
   ///
   /// The rectangle corresponds to the raw input image
   /// passed for inference
-  Rect _location;
+  late Rect _location;
 
   Recognition(this._id, this._label, this._score, [this._location]);
 
