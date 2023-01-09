@@ -15,7 +15,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   /// Results to draw bounding boxes
-  late List<Recognition> results;
+  late List<Recognition> _results;
 
   /// Realtime stats
   late Stats stats;
@@ -34,7 +34,7 @@ class _HomeViewState extends State<HomeView> {
           CameraView(resultsCallback, statsCallback),
 
           // Bounding boxes
-          boundingBoxes(results),
+          boundingBoxes(_results),
 
           // Heading
           Align(
@@ -103,7 +103,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   /// Returns Stack of bounding boxes
-  Widget boundingBoxes(List<Recognition> results) {
+  Widget boundingBoxes(List<Recognition>? results) {
     if (results == null) {
       return Container();
     }
@@ -119,7 +119,7 @@ class _HomeViewState extends State<HomeView> {
   /// Callback to get inference results from [CameraView]
   void resultsCallback(List<Recognition> results) {
     setState(() {
-      this.results = results;
+      _results = results;
     });
   }
 
