@@ -15,10 +15,10 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   /// Results to draw bounding boxes
-  late List<Recognition> _results;
+  late List<Recognition> _results = [];
 
   /// Realtime stats
-  late Stats stats;
+  late Stats _stats;
 
   /// Scaffold Key
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
@@ -73,17 +73,17 @@ class _HomeViewState extends State<HomeView> {
                       children: [
                         Icon(Icons.keyboard_arrow_up,
                             size: 48, color: Colors.orange),
-                        (stats != null)
+                        (_stats != null)
                             ? Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   children: [
                                     StatsRow('Inference time:',
-                                        '${stats.inferenceTime} ms'),
+                                        '${_stats.inferenceTime} ms'),
                                     StatsRow('Total prediction time:',
-                                        '${stats.totalElapsedTime} ms'),
+                                        '${_stats.totalElapsedTime} ms'),
                                     StatsRow('Pre-processing time:',
-                                        '${stats.preProcessingTime} ms'),
+                                        '${_stats.preProcessingTime} ms'),
                                     StatsRow('Frame',
                                         '${CameraViewSingleton.inputImageSize?.width} X ${CameraViewSingleton.inputImageSize?.height}'),
                                   ],
@@ -126,7 +126,7 @@ class _HomeViewState extends State<HomeView> {
   /// Callback to get inference stats from [CameraView]
   void statsCallback(Stats stats) {
     setState(() {
-      this.stats = stats;
+      _stats = stats;
     });
   }
 
