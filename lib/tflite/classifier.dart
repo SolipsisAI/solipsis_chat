@@ -12,10 +12,10 @@ import 'stats.dart';
 /// Classifier
 class Classifier {
   /// Instance of Interpreter
-  Interpreter _interpreter;
+  late Interpreter _interpreter;
 
   /// Labels file loaded as list
-  List<String> _labels;
+  late List<String> _labels;
 
   static const String MODEL_FILE_NAME = "detect.tflite";
   static const String LABEL_FILE_NAME = "labelmap.txt";
@@ -27,30 +27,30 @@ class Classifier {
   static const double THRESHOLD = 0.5;
 
   /// [ImageProcessor] used to pre-process the image
-  ImageProcessor imageProcessor;
+  late ImageProcessor imageProcessor;
 
   /// Padding the image to transform into square
-  int padSize;
+  late int padSize;
 
   /// Shapes of output tensors
-  List<List<int>> _outputShapes;
+  late List<List<int>> _outputShapes;
 
   /// Types of output tensors
-  List<TfLiteType> _outputTypes;
+  late List<TfLiteType> _outputTypes;
 
   /// Number of results to show
   static const int NUM_RESULTS = 10;
 
   Classifier({
-    Interpreter interpreter,
-    List<String> labels,
+    Interpreter? interpreter,
+    List<String>? labels,
   }) {
     loadModel(interpreter: interpreter);
     loadLabels(labels: labels);
   }
 
   /// Loads interpreter from asset
-  void loadModel({Interpreter interpreter}) async {
+  void loadModel({Interpreter? interpreter}) async {
     try {
       _interpreter = interpreter ??
           await Interpreter.fromAsset(
@@ -71,7 +71,7 @@ class Classifier {
   }
 
   /// Loads labels from assets
-  void loadLabels({List<String> labels}) async {
+  void loadLabels({List<String>? labels}) async {
     try {
       _labels =
           labels ?? await FileUtil.loadLabels("assets/" + LABEL_FILE_NAME);
@@ -96,11 +96,6 @@ class Classifier {
   /// Runs object detection on the input image
   Map<String, dynamic> predict(imageLib.Image image) {
     var predictStartTime = DateTime.now().millisecondsSinceEpoch;
-
-    if (_interpreter == null) {
-      print("Interpreter not initialized");
-      return null;
-    }
 
     var preProcessStart = DateTime.now().millisecondsSinceEpoch;
 
