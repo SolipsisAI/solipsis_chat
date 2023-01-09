@@ -20,7 +20,7 @@ class Recognition {
   /// passed for inference
   late Rect _location;
 
-  Recognition(this._id, this._label, this._score, [this._location]);
+  Recognition(this._id, this._label, this._score, this._location);
 
   int get id => _id;
 

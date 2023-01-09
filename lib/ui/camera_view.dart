@@ -25,19 +25,19 @@ class CameraView extends StatefulWidget {
 
 class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
   /// List of available cameras
-  List<CameraDescription> cameras;
+  late List<CameraDescription> cameras;
 
   /// Controller
-  CameraController cameraController;
+  late CameraController cameraController;
 
   /// true when inference is ongoing
-  bool predicting;
+  bool predicting = false;
 
   /// Instance of [Classifier]
-  Classifier classifier;
+  late Classifier classifier;
 
   /// Instance of [IsolateUtils]
-  IsolateUtils isolateUtils;
+  late IsolateUtils isolateUtils;
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class _CameraViewState extends State<CameraView> with WidgetsBindingObserver {
       /// previewSize is size of each image frame captured by controller
       ///
       /// 352x288 on iOS, 240p (320x240) on Android with ResolutionPreset.low
-      Size previewSize = cameraController.value.previewSize;
+      Size previewSize = cameraController.value.previewSize!;
 
       /// previewSize is size of raw input image to the model
       CameraViewSingleton.inputImageSize = previewSize;
