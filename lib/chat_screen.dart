@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:core';
 import 'dart:developer' as logger;
 import 'dart:convert';
@@ -29,7 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _showTyping = false;
   int _page = 0;
   bool _userIsTyping = false;
-  final Debouncer _debouncer = Debouncer(delay: 500);
+  final Debouncer _debouncer = Debouncer(delay: 5 * 1000);
   final Stopwatch _stopwatch = Stopwatch();
 
   List<types.Message> _messages = [];
@@ -64,7 +65,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     messagesUpdated.listen((event) {
       print('messages added');
-      if (_userMessages.isNotEmpty) {
+      if (_userMessages.isNotEmpty && !_userIsTyping) {
         final rawText = _userMessages.last;
         _debouncer.run(() => _handleBotResponse(rawText));
       }
@@ -75,15 +76,25 @@ class _ChatScreenState extends State<ChatScreen> {
     if (!_userIsTyping) {
       toggleUserIsTyping();
     }
-    if (!_stopwatch.isRunning) {
-      _stopwatch.start();
-    }
   }
 
   void toggleUserIsTyping() {
     setState(() {
       _userIsTyping = !_userIsTyping;
     });
+  }
+
+  void toggleStopwatch() {
+    if (!_userIsTyping) {
+      _stopwatch.reset();
+      print('reset');
+    } else if (!_stopwatch.isRunning) {
+      _stopwatch.start();
+      print('started');
+    } else if (_stopwatch.isRunning) {
+      _stopwatch.stop();
+      print('stopped. elapsed: ${_stopwatch.elapsed}');
+    }
   }
 
   Future<void> _handleEndReached() async {
@@ -111,6 +122,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _handleBotResponse(String text) async {
+    if (_userIsTyping) {
+      return;
+    }
+
     final String rawText = _userMessages.last;
     final ChatResponse response = await chatBot.handleMessage(rawText);
     final types.TextMessage message = types.TextMessage(
@@ -158,9 +173,6 @@ class _ChatScreenState extends State<ChatScreen> {
     });
 
     toggleUserIsTyping();
-    _stopwatch.stop();
-    print('${_stopwatch.elapsedMilliseconds} ms elapsed');
-    _stopwatch.reset();
   }
 
   Widget _bubbleBuilder(
