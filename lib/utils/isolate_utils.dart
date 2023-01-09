@@ -3,9 +3,10 @@ import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:image/image.dart' as imageLib;
-import 'package:object_detection/tflite/classifier.dart';
-import 'package:object_detection/utils/image_utils.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
+
+import '../tflite/classifier.dart';
+import '../utils/image_utils.dart';
 
 /// Manages separate Isolate instance for inference
 class IsolateUtils {

@@ -44,6 +44,9 @@ dependencies:
   path_provider: ^2.0.9
   tflite_flutter: ^0.9.0
   ml_linalg: ^13.11.20
+  camera: ^0.10.1
+  image: ^3.3.0
+  tflite_flutter_helper: ^0.2.1
 
 dev_dependencies:
   flutter_test:
