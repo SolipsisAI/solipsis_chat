@@ -15,12 +15,12 @@ class Classifier {
 
   void _loadModel() async {
     // Creating the interpreter using Interpreter.fromAsset
-    interpreter = await Interpreter.fromAsset(modelFile);
+    interpreter = await Interpreter.fromAsset('models/$modelFile');
     print('Interpreter $modelFile loaded successfully');
   }
 
   void _loadDictionary() async {
-    final vocab = await rootBundle.loadString('assets/$vocabFile');
+    final vocab = await rootBundle.loadString('assets/models/$vocabFile');
     var _dict = <String, int>{};
     final vocabList = vocab.split('\n');
     for (var i = 0; i < vocabList.length; i++) {
