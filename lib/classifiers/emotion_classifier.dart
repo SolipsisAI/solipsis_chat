@@ -1,6 +1,4 @@
 import 'package:tflite_flutter/tflite_flutter.dart';
-import '../utils.dart';
-
 import 'classifier.dart';
 
 const vocabFile = 'emotion_classification.vocab.txt';

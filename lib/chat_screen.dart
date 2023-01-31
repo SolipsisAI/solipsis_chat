@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:core';
 import 'dart:developer' as logger;
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:solipsis_chat/core/response.dart';
 import 'models/chat_message.dart';
 import 'core/bot.dart';
 import 'utils.dart';
+import 'debouncer.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key, required this.isar, required this.chatMessages})
@@ -26,13 +29,18 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   bool _showTyping = false;
   int _page = 0;
+  bool _userIsTyping = false;
+  final Debouncer _debouncer = Debouncer(delay: 5 * 1000);
+  final Stopwatch _stopwatch = Stopwatch();
 
   List<types.Message> _messages = [];
+  List<String> _userMessages = [];
 
   final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
   final _bot = const types.User(id: '09778d0f-fb94-4ac6-8d72-96112805f3ad');
 
   late ChatBot chatBot;
+  late Stream<void> messagesUpdated;
 
   @override
   void initState() {
@@ -48,6 +56,44 @@ class _ChatScreenState extends State<ChatScreen> {
                 createdAt: widget.chatMessages[i].createdAt,
                 text: widget.chatMessages[i].text));
       });
+    }
+    initStateAsync();
+  }
+
+  void initStateAsync() async {
+    messagesUpdated = widget.isar.chatMessages.watchLazy();
+
+    messagesUpdated.listen((event) {
+      print('messages added');
+      if (_userMessages.isNotEmpty && !_userIsTyping) {
+        final rawText = _userMessages.last;
+        _debouncer.run(() => _handleBotResponse(rawText));
+      }
+    });
+  }
+
+  void _handleUserTyping(String text) {
+    if (!_userIsTyping) {
+      toggleUserIsTyping();
+    }
+  }
+
+  void toggleUserIsTyping() {
+    setState(() {
+      _userIsTyping = !_userIsTyping;
+    });
+  }
+
+  void toggleStopwatch() {
+    if (!_userIsTyping) {
+      _stopwatch.reset();
+      print('reset');
+    } else if (!_stopwatch.isRunning) {
+      _stopwatch.start();
+      print('started');
+    } else if (_stopwatch.isRunning) {
+      _stopwatch.stop();
+      print('stopped. elapsed: ${_stopwatch.elapsed}');
     }
   }
 
@@ -76,20 +122,23 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _handleBotResponse(String text) async {
-    _showTyping = true;
+    if (_userIsTyping) {
+      return;
+    }
 
-    final response = await chatBot.handleMessage(text);
-
-    final message = types.TextMessage(
-        author: _bot,
-        createdAt: currentTimestamp(),
+    final String rawText = _userMessages.last;
+    final ChatResponse response = await chatBot.handleMessage(rawText);
+    final types.TextMessage message = types.TextMessage(
         id: randomString(),
-        text: response.text);
+        author: _bot,
+        text: response.text,
+        createdAt: currentTimestamp());
+    print(response.text);
 
-    await Future.delayed(
-        Duration(seconds: messageDelay(message)), () => _showTyping = false);
-
-    _addMessage(message);
+    setState(() {
+      _addMessage(message);
+      _userMessages.removeAt(0);
+    });
   }
 
   void _addMessage(types.TextMessage message) async {
@@ -118,7 +167,12 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     _addMessage(textMessage);
-    await _handleBotResponse(message.text);
+
+    setState(() {
+      _userMessages.add(message.text);
+    });
+
+    toggleUserIsTyping();
   }
 
   Widget _bubbleBuilder(
@@ -157,6 +211,7 @@ class _ChatScreenState extends State<ChatScreen> {
           showTyping: _showTyping,
           showUserAvatars: true,
           showUserNames: true,
+          onTextChanged: _handleUserTyping,
         ),
       ),
     );
