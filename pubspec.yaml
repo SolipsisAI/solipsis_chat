@@ -38,6 +38,8 @@ dependencies:
   uuid: ^3.0.5
   flutter_chat_ui:
     path: ../flutter_chat_ui
+  text_classifiers:
+    path: ../text_classifiers_flutter
 
   isar: 2.2.1
   isar_flutter_libs: 2.2.1
