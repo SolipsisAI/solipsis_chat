@@ -17,6 +17,9 @@ This is the Flutter app for Solipsis.
 git clone -b typing_indicator git@github.com:bitjockey42/flutter_chat_ui.git
 git clone git@github.com:SolipsisAI/solipsis_chat.git
 
+# Clone the `text_classifiers`
+git clone git@github.com:SolipsisAI/text_classifiers_flutter.git
+
 # Get dependencies
 cd solipsis_chat
 flutter pub get
