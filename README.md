@@ -43,12 +43,16 @@ bash ./download_assets.sh
 ```shell
 # SETUP PYTHON
 pyenv install miniforge3
+
 # Activate miniforge3
 pyenv shell miniforge3
+
 # Setup conda environment
 conda create --name tensorflow # this can be any name
+
 # Activate environment
 conda activate tensorflow
+
 # Install numpy
 conda install numpy
 ```
