@@ -1,5 +1,5 @@
-import '../classifiers/emotion_classifier.dart';
-import '../classifiers/sentiment_classifier.dart';
+import 'package:text_classifiers/text_classifiers.dart';
+
 import 'response.dart';
 
 class ChatBot {
