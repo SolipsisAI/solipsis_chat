@@ -6,8 +6,9 @@ TFLITE_IOS_DIR=$PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios
 
 BAZEL_VERSION=5.0.0
 TF_VERSION=2.9
-
 BAZEL_URL="https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-$unamestr-x86_64.sh"
+
+TFLITE_FRAMEWORK_URL=https://solipsis-data.s3.us-east-2.amazonaws.com/pkg/TensorFlowLiteC.framework.zip
 
 BASE_LIB_FILENAME="libtensorflowlite_c"
 

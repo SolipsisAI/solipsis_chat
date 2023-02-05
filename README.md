@@ -10,6 +10,7 @@ This is the Flutter app for Solipsis.
 - `bazel-5.0.0` to be installed by `install_libs.sh`
 - `python3` which can be set up by the `install_libs.sh` script.
 - `numpy` same as above
+- [`TensorFlowLiteC.framework`](https://solipsis-data.s3.us-east-2.amazonaws.com/pkg/TensorFlowLiteC.framework.zip)
 
 ## Automated Setup
 
@@ -36,6 +37,29 @@ INCLUDE_IOS=true bash ./install_libs.sh
 
 # Download model file and vocab text
 bash ./download_assets.sh
+```
+
+## Setup with pre-built libraries
+
+### iOS
+
+Download [TensorFlowLiteC.framework.zip](https://solipsis-data.s3.us-east-2.amazonaws.com/pkg/TensorFlowLiteC.framework.zip).
+
+In terminal:
+```shell
+# Install dependencies
+fvm flutter clean
+fvm flutter pub get
+
+# Download framework
+curl -Lo https://solipsis-data.s3.us-east-2.amazonaws.com/pkg/TensorFlowLiteC.framework.zip 
+unzip TensorFlowLiteC.framework.zip -d $PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios
+
+# Setup with flutter
+cd $PROJECT_DIR/ios
+pod install
+fvm flutter clean
+fvm flutter pub get
 ```
 
 ## Python manual setup
