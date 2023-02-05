@@ -52,7 +52,7 @@ fvm flutter clean
 fvm flutter pub get
 
 # Download framework
-curl -Lo https://solipsis-data.s3.us-east-2.amazonaws.com/pkg/TensorFlowLiteC.framework.zip 
+curl -LO https://solipsis-data.s3.us-east-2.amazonaws.com/pkg/TensorFlowLiteC.framework.zip 
 unzip TensorFlowLiteC.framework.zip -d $PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios
 
 # Setup with flutter
