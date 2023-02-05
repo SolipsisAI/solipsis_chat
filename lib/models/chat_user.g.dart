@@ -6,20 +6,16 @@ part of 'chat_user.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetChatUserCollection on Isar {
-  IsarCollection<ChatUser> get chatUsers {
-    return getCollection('ChatUser');
-  }
+  IsarCollection<ChatUser> get chatUsers => getCollection();
 }
 
-final ChatUserSchema = CollectionSchema(
+const ChatUserSchema = CollectionSchema(
   name: 'ChatUser',
   schema:
       '{"name":"ChatUser","idName":"id","properties":[{"name":"createdAt","type":"Long"},{"name":"firstName","type":"String"},{"name":"imageUrl","type":"String"},{"name":"lastName","type":"String"},{"name":"nick","type":"String"},{"name":"updatedAt","type":"Long"},{"name":"uuid","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _ChatUserNativeAdapter(),
-  webAdapter: const _ChatUserWebAdapter(),
   idName: 'id',
   propertyIds: {
     'createdAt': 0,
@@ -32,244 +28,231 @@ final ChatUserSchema = CollectionSchema(
   },
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _chatUserGetId,
+  setId: _chatUserSetId,
+  getLinks: _chatUserGetLinks,
+  attachLinks: _chatUserAttachLinks,
+  serializeNative: _chatUserSerializeNative,
+  deserializeNative: _chatUserDeserializeNative,
+  deserializePropNative: _chatUserDeserializePropNative,
+  serializeWeb: _chatUserSerializeWeb,
+  deserializeWeb: _chatUserDeserializeWeb,
+  deserializePropWeb: _chatUserDeserializePropWeb,
+  version: 3,
 );
 
-class _ChatUserWebAdapter extends IsarWebTypeAdapter<ChatUser> {
-  const _ChatUserWebAdapter();
-
-  @override
-  Object serialize(IsarCollection<ChatUser> collection, ChatUser object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'createdAt', object.createdAt);
-    IsarNative.jsObjectSet(jsObj, 'firstName', object.firstName);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'imageUrl', object.imageUrl);
-    IsarNative.jsObjectSet(jsObj, 'lastName', object.lastName);
-    IsarNative.jsObjectSet(jsObj, 'nick', object.nick);
-    IsarNative.jsObjectSet(jsObj, 'updatedAt', object.updatedAt);
-    IsarNative.jsObjectSet(jsObj, 'uuid', object.uuid);
-    return jsObj;
+int? _chatUserGetId(ChatUser object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
-
-  @override
-  ChatUser deserialize(IsarCollection<ChatUser> collection, dynamic jsObj) {
-    final object = ChatUser();
-    object.createdAt =
-        IsarNative.jsObjectGet(jsObj, 'createdAt') ?? double.negativeInfinity;
-    object.firstName = IsarNative.jsObjectGet(jsObj, 'firstName') ?? '';
-    object.id = IsarNative.jsObjectGet(jsObj, 'id');
-    object.imageUrl = IsarNative.jsObjectGet(jsObj, 'imageUrl') ?? '';
-    object.lastName = IsarNative.jsObjectGet(jsObj, 'lastName') ?? '';
-    object.nick = IsarNative.jsObjectGet(jsObj, 'nick') ?? '';
-    object.updatedAt =
-        IsarNative.jsObjectGet(jsObj, 'updatedAt') ?? double.negativeInfinity;
-    object.uuid = IsarNative.jsObjectGet(jsObj, 'uuid') ?? '';
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'createdAt':
-        return (IsarNative.jsObjectGet(jsObj, 'createdAt') ??
-            double.negativeInfinity) as P;
-      case 'firstName':
-        return (IsarNative.jsObjectGet(jsObj, 'firstName') ?? '') as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id')) as P;
-      case 'imageUrl':
-        return (IsarNative.jsObjectGet(jsObj, 'imageUrl') ?? '') as P;
-      case 'lastName':
-        return (IsarNative.jsObjectGet(jsObj, 'lastName') ?? '') as P;
-      case 'nick':
-        return (IsarNative.jsObjectGet(jsObj, 'nick') ?? '') as P;
-      case 'updatedAt':
-        return (IsarNative.jsObjectGet(jsObj, 'updatedAt') ??
-            double.negativeInfinity) as P;
-      case 'uuid':
-        return (IsarNative.jsObjectGet(jsObj, 'uuid') ?? '') as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, ChatUser object) {}
 }
 
-class _ChatUserNativeAdapter extends IsarNativeTypeAdapter<ChatUser> {
-  const _ChatUserNativeAdapter();
-
-  @override
-  void serialize(IsarCollection<ChatUser> collection, IsarRawObject rawObj,
-      ChatUser object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.createdAt;
-    final _createdAt = value0;
-    final value1 = object.firstName;
-    final _firstName = IsarBinaryWriter.utf8Encoder.convert(value1);
-    dynamicSize += (_firstName.length) as int;
-    final value2 = object.imageUrl;
-    final _imageUrl = IsarBinaryWriter.utf8Encoder.convert(value2);
-    dynamicSize += (_imageUrl.length) as int;
-    final value3 = object.lastName;
-    final _lastName = IsarBinaryWriter.utf8Encoder.convert(value3);
-    dynamicSize += (_lastName.length) as int;
-    final value4 = object.nick;
-    final _nick = IsarBinaryWriter.utf8Encoder.convert(value4);
-    dynamicSize += (_nick.length) as int;
-    final value5 = object.updatedAt;
-    final _updatedAt = value5;
-    final value6 = object.uuid;
-    final _uuid = IsarBinaryWriter.utf8Encoder.convert(value6);
-    dynamicSize += (_uuid.length) as int;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeLong(offsets[0], _createdAt);
-    writer.writeBytes(offsets[1], _firstName);
-    writer.writeBytes(offsets[2], _imageUrl);
-    writer.writeBytes(offsets[3], _lastName);
-    writer.writeBytes(offsets[4], _nick);
-    writer.writeLong(offsets[5], _updatedAt);
-    writer.writeBytes(offsets[6], _uuid);
-  }
-
-  @override
-  ChatUser deserialize(IsarCollection<ChatUser> collection, int id,
-      IsarBinaryReader reader, List<int> offsets) {
-    final object = ChatUser();
-    object.createdAt = reader.readLong(offsets[0]);
-    object.firstName = reader.readString(offsets[1]);
-    object.id = id;
-    object.imageUrl = reader.readString(offsets[2]);
-    object.lastName = reader.readString(offsets[3]);
-    object.nick = reader.readString(offsets[4]);
-    object.updatedAt = reader.readLong(offsets[5]);
-    object.uuid = reader.readString(offsets[6]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readLong(offset)) as P;
-      case 1:
-        return (reader.readString(offset)) as P;
-      case 2:
-        return (reader.readString(offset)) as P;
-      case 3:
-        return (reader.readString(offset)) as P;
-      case 4:
-        return (reader.readString(offset)) as P;
-      case 5:
-        return (reader.readLong(offset)) as P;
-      case 6:
-        return (reader.readString(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, ChatUser object) {}
+void _chatUserSetId(ChatUser object, int id) {
+  object.id = id;
 }
+
+List<IsarLinkBase> _chatUserGetLinks(ChatUser object) {
+  return [];
+}
+
+void _chatUserSerializeNative(
+    IsarCollection<ChatUser> collection,
+    IsarRawObject rawObj,
+    ChatUser object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.createdAt;
+  final _createdAt = value0;
+  final value1 = object.firstName;
+  final _firstName = IsarBinaryWriter.utf8Encoder.convert(value1);
+  dynamicSize += (_firstName.length) as int;
+  final value2 = object.imageUrl;
+  final _imageUrl = IsarBinaryWriter.utf8Encoder.convert(value2);
+  dynamicSize += (_imageUrl.length) as int;
+  final value3 = object.lastName;
+  final _lastName = IsarBinaryWriter.utf8Encoder.convert(value3);
+  dynamicSize += (_lastName.length) as int;
+  final value4 = object.nick;
+  final _nick = IsarBinaryWriter.utf8Encoder.convert(value4);
+  dynamicSize += (_nick.length) as int;
+  final value5 = object.updatedAt;
+  final _updatedAt = value5;
+  final value6 = object.uuid;
+  final _uuid = IsarBinaryWriter.utf8Encoder.convert(value6);
+  dynamicSize += (_uuid.length) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeLong(offsets[0], _createdAt);
+  writer.writeBytes(offsets[1], _firstName);
+  writer.writeBytes(offsets[2], _imageUrl);
+  writer.writeBytes(offsets[3], _lastName);
+  writer.writeBytes(offsets[4], _nick);
+  writer.writeLong(offsets[5], _updatedAt);
+  writer.writeBytes(offsets[6], _uuid);
+}
+
+ChatUser _chatUserDeserializeNative(IsarCollection<ChatUser> collection, int id,
+    IsarBinaryReader reader, List<int> offsets) {
+  final object = ChatUser();
+  object.createdAt = reader.readLong(offsets[0]);
+  object.firstName = reader.readString(offsets[1]);
+  object.id = id;
+  object.imageUrl = reader.readString(offsets[2]);
+  object.lastName = reader.readString(offsets[3]);
+  object.nick = reader.readString(offsets[4]);
+  object.updatedAt = reader.readLong(offsets[5]);
+  object.uuid = reader.readString(offsets[6]);
+  return object;
+}
+
+P _chatUserDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readLong(offset)) as P;
+    case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readString(offset)) as P;
+    case 3:
+      return (reader.readString(offset)) as P;
+    case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readLong(offset)) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _chatUserSerializeWeb(
+    IsarCollection<ChatUser> collection, ChatUser object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'createdAt', object.createdAt);
+  IsarNative.jsObjectSet(jsObj, 'firstName', object.firstName);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'imageUrl', object.imageUrl);
+  IsarNative.jsObjectSet(jsObj, 'lastName', object.lastName);
+  IsarNative.jsObjectSet(jsObj, 'nick', object.nick);
+  IsarNative.jsObjectSet(jsObj, 'updatedAt', object.updatedAt);
+  IsarNative.jsObjectSet(jsObj, 'uuid', object.uuid);
+  return jsObj;
+}
+
+ChatUser _chatUserDeserializeWeb(
+    IsarCollection<ChatUser> collection, dynamic jsObj) {
+  final object = ChatUser();
+  object.createdAt =
+      IsarNative.jsObjectGet(jsObj, 'createdAt') ?? double.negativeInfinity;
+  object.firstName = IsarNative.jsObjectGet(jsObj, 'firstName') ?? '';
+  object.id = IsarNative.jsObjectGet(jsObj, 'id');
+  object.imageUrl = IsarNative.jsObjectGet(jsObj, 'imageUrl') ?? '';
+  object.lastName = IsarNative.jsObjectGet(jsObj, 'lastName') ?? '';
+  object.nick = IsarNative.jsObjectGet(jsObj, 'nick') ?? '';
+  object.updatedAt =
+      IsarNative.jsObjectGet(jsObj, 'updatedAt') ?? double.negativeInfinity;
+  object.uuid = IsarNative.jsObjectGet(jsObj, 'uuid') ?? '';
+  return object;
+}
+
+P _chatUserDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'createdAt':
+      return (IsarNative.jsObjectGet(jsObj, 'createdAt') ??
+          double.negativeInfinity) as P;
+    case 'firstName':
+      return (IsarNative.jsObjectGet(jsObj, 'firstName') ?? '') as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id')) as P;
+    case 'imageUrl':
+      return (IsarNative.jsObjectGet(jsObj, 'imageUrl') ?? '') as P;
+    case 'lastName':
+      return (IsarNative.jsObjectGet(jsObj, 'lastName') ?? '') as P;
+    case 'nick':
+      return (IsarNative.jsObjectGet(jsObj, 'nick') ?? '') as P;
+    case 'updatedAt':
+      return (IsarNative.jsObjectGet(jsObj, 'updatedAt') ??
+          double.negativeInfinity) as P;
+    case 'uuid':
+      return (IsarNative.jsObjectGet(jsObj, 'uuid') ?? '') as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _chatUserAttachLinks(IsarCollection col, int id, ChatUser object) {}
 
 extension ChatUserQueryWhereSort on QueryBuilder<ChatUser, ChatUser, QWhere> {
   QueryBuilder<ChatUser, ChatUser, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
 extension ChatUserQueryWhere on QueryBuilder<ChatUser, ChatUser, QWhereClause> {
-  QueryBuilder<ChatUser, ChatUser, QAfterWhereClause> idEqualTo(int? id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+  QueryBuilder<ChatUser, ChatUser, QAfterWhereClause> idEqualTo(int id) {
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
 
-  QueryBuilder<ChatUser, ChatUser, QAfterWhereClause> idNotEqualTo(int? id) {
+  QueryBuilder<ChatUser, ChatUser, QAfterWhereClause> idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
-  QueryBuilder<ChatUser, ChatUser, QAfterWhereClause> idGreaterThan(
-    int? id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+  QueryBuilder<ChatUser, ChatUser, QAfterWhereClause> idGreaterThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
-  QueryBuilder<ChatUser, ChatUser, QAfterWhereClause> idLessThan(
-    int? id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+  QueryBuilder<ChatUser, ChatUser, QAfterWhereClause> idLessThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<ChatUser, ChatUser, QAfterWhereClause> idBetween(
-    int? lowerId,
-    int? upperId, {
+    int lowerId,
+    int upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }
@@ -436,8 +419,7 @@ extension ChatUserQueryFilter
     ));
   }
 
-  QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> idEqualTo(
-      int? value) {
+  QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'id',
@@ -446,7 +428,7 @@ extension ChatUserQueryFilter
   }
 
   QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> idGreaterThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -458,7 +440,7 @@ extension ChatUserQueryFilter
   }
 
   QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> idLessThan(
-    int? value, {
+    int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -470,8 +452,8 @@ extension ChatUserQueryFilter
   }
 
   QueryBuilder<ChatUser, ChatUser, QAfterFilterCondition> idBetween(
-    int? lower,
-    int? upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
