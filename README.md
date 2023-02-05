@@ -6,6 +6,7 @@ This is the Flutter app for Solipsis.
 
 ## Pre-requisites
 
+- [`fvm`](https://fvm.app/docs/getting_started/installation) for managing multiple flutter versions, in this case 3.3.8
 - `bazel-5.0.0` to be installed by `install_libs.sh`
 - `python3` which can be set up by the `install_libs.sh` script.
 - `numpy` same as above

@@ -29,6 +29,14 @@ setup_bazel () {
   fi
 }
 
+setup_fvm () {
+  if ! command -v fvm &> /dev/null
+  then
+    echo "Please install fvm: https://fvm.app/docs/getting_started/installation"
+  fi
+  exit 1
+}
+
 build_binaries () {
   cd $PROJECT_DIR/..
 
@@ -98,6 +106,8 @@ else
     echo "Unsupported"
     exit 1
 fi
+
+setup_fvm
 
 if [[ "$INCLUDE_IOS" == 'True' || "$INCLUDE_IOS" == 'true' ]]; then
     if [ ! -d "$PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios/TensorFlowLiteC.framework" ]; then
