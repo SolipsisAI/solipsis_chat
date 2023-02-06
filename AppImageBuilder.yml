@@ -5,7 +5,7 @@ AppDir:
   app_info:
     id: ai.solipsis.Solipsis
     name: Solipsis Chat
-    icon: flutter-mark-square-64
+    icon: application-vnd.appimage
     version: latest
     exec: solipsis_chat
     exec_args: $@
