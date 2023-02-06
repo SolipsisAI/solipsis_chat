@@ -49,3 +49,8 @@ assets/models/
 assets/backups/
 blobs/
 venv/
+
+# appimage-builder
+AppDir/
+appimage-build/
+*.AppImage
