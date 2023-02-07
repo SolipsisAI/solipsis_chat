@@ -62,6 +62,28 @@ fvm flutter clean
 fvm flutter pub get
 ```
 
+### Linux
+
+Download [libtensorflowlite_c-linux.so](https://solipsis-data.s3.us-east-2.amazonaws.com/blobs/libtensorflowlite_c-linux.so) and place in `blobs/`:
+
+```shell
+mkdir -p blobs
+cd blobs
+curl -LO https://solipsis-data.s3.us-east-2.amazonaws.com/blobs/libtensorflowlite_c-linux.so
+cd ..
+```
+
+### macOS
+
+Download [libtensorflowlite_c-mac.dylib](https://solipsis-data.s3.us-east-2.amazonaws.com/blobs/libtensorflowlite_c-mac.dylib) and place in `blobs/`:
+
+```shell
+mkdir -p blobs
+cd blobs
+curl -LO https://solipsis-data.s3.us-east-2.amazonaws.com/blobs/libtensorflowlite_c-mac.dylib
+cd ..
+```
+
 ## Python manual setup
 
 ```shell
