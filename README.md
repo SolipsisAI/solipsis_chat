@@ -59,7 +59,7 @@ curl -LO https://solipsis-data.s3.us-east-2.amazonaws.com/pkg/TensorFlowLiteC.fr
 unzip TensorFlowLiteC.framework.zip -d ios/.symlinks/plugins/tflite_flutter/ios
 
 # Setup with flutter
-cd $PROJECT_DIR/ios
+cd ios
 pod install
 fvm flutter clean
 fvm flutter pub get
