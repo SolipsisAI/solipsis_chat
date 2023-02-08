@@ -22,6 +22,9 @@ git clone git@github.com:SolipsisAI/solipsis_chat.git
 # Clone the `text_classifiers`
 git clone git@github.com:SolipsisAI/text_classifiers_flutter.git
 
+# Clone `tflite_flutter_plugin` which is a dep of the above
+git clone git@github.com:SolipsisAI/tflite_flutter_plugin.git
+
 # Get dependencies
 cd solipsis_chat
 flutter pub get
