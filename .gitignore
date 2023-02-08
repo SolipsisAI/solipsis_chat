@@ -48,4 +48,4 @@ app.*.map.json
 assets/models/
 assets/backups/
 blobs/
-venv/
+venv/TensorFlowLiteC.framework.zip
