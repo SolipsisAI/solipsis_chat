@@ -49,3 +49,6 @@ assets/models/
 assets/backups/
 blobs/
 venv/TensorFlowLiteC.framework.zip
+AppDir/
+venv/
+appimage-build/
