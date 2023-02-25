@@ -6,11 +6,15 @@ TFLITE_IOS_DIR=$PROJECT_DIR/ios/.symlinks/plugins/tflite_flutter/ios
 
 BAZEL_VERSION=5.0.0
 TF_VERSION=2.9
+
+unamestr=$(uname|tr '[:upper:]' '[:lower:]')
 BAZEL_URL="https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-$unamestr-x86_64.sh"
 
 TFLITE_FRAMEWORK_URL=https://solipsis-data.s3.us-east-2.amazonaws.com/pkg/TensorFlowLiteC.framework.zip
 
 BASE_LIB_FILENAME="libtensorflowlite_c"
+
+export PATH=$HOME/bin:$PATH
 
 setup_python () {
   cd $PROJECT_DIR
@@ -24,6 +28,7 @@ setup_bazel () {
   if ! command -v bazel &> /dev/null
   then
     echo "bazel-$BAZEL_VERSION not installed"
+    echo $BAZEL_URL
     curl -f -L -o /tmp/bazel-installer.sh $BAZEL_URL
     chmod +x /tmp/bazel-installer.sh
     /tmp/bazel-installer.sh --user
@@ -34,8 +39,8 @@ setup_fvm () {
   if ! command -v fvm &> /dev/null
   then
     echo "Please install fvm: https://fvm.app/docs/getting_started/installation"
+    exit 1
   fi
-  exit 1
 }
 
 build_binaries () {
@@ -91,14 +96,12 @@ copy_to_project () {
     cp $TF_DIR/bazel-bin/tensorflow/lite/c/$src_filename $BLOBS_DIR/$dest_filename
 }
 
-unamestr=$(uname|tr '[:upper:]' '[:lower:]')
 if [[ "$unamestr" == 'linux' ]]; then
     echo "Setting up on Linux"
     src_filename="${BASE_LIB_FILENAME}.so"
     dest_filename="${BASE_LIB_FILENAME}-linux.so"
     BLOBS_DIR=${PROJECT_DIR}/blobs
     mkdir -p $BLOBS_DIR
-    #setup_linux
 elif [[ "$unamestr" == 'darwin' ]]; then
     echo "macos"
     src_filename="${BASE_LIB_FILENAME}.dylib"
@@ -119,7 +122,7 @@ if [[ "$INCLUDE_IOS" == 'True' || "$INCLUDE_IOS" == 'true' ]]; then
     fi
 fi
 
-if [ ! -d  "$BLOBS_DIR/$dest_filename" ]; then
+if [ ! -f  "$BLOBS_DIR/$dest_filename" ]; then
     echo "[INFO] Installing dependencies"
     setup_bazel
     setup_python
