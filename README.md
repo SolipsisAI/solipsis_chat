@@ -37,7 +37,11 @@ bash ./install_libs.sh
 
 # INSTALL LIBRARIES FOR IOS
 INCLUDE_IOS=true bash ./install_libs.sh
+```
 
+In the `text_classifiers_flutter`:
+```shell
+cd ../text_classifiers_flutter
 # Download model file and vocab text
 bash ./download_assets.sh
 ```
