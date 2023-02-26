@@ -2,6 +2,19 @@
 
 This is the Flutter app for Solipsis.
 
+- [solipsis\_chat](#solipsis_chat)
+- [Development](#development)
+  - [Pre-requisites](#pre-requisites)
+  - [Automated Setup](#automated-setup)
+  - [Setup with pre-built libraries](#setup-with-pre-built-libraries)
+    - [iOS](#ios)
+    - [Linux](#linux)
+    - [macOS](#macos)
+  - [Python manual setup](#python-manual-setup)
+  - [Running app](#running-app)
+- [Troubleshooting](#troubleshooting)
+  - [`numpy` not found](#numpy-not-found)
+
 # Development
 
 ## Pre-requisites
@@ -131,3 +144,9 @@ Chrome (web)       • chrome                               • web-javascript �
 
 $ flutter run -d 'iphone 11' # launch app in Simulator
 ```
+
+# Troubleshooting
+
+## `numpy` not found
+
+If you are using `pyenv` and a `venv`, make sure `pyenv` is set up in your shell configuration. And use a different terminal window.
