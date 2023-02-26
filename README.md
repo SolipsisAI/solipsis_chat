@@ -12,6 +12,8 @@ This is the Flutter app for Solipsis.
     - [macOS](#macos)
   - [Python manual setup](#python-manual-setup)
   - [Running app](#running-app)
+- [Building](#building)
+  - [Linux](#linux-1)
 - [Troubleshooting](#troubleshooting)
   - [`numpy` not found](#numpy-not-found)
 
@@ -146,6 +148,22 @@ $ flutter run -d 'iphone 11' # launch app in Simulator
 
 # Launch on Linux
 $ flutter run -d linux --verbose
+```
+
+# Building
+
+NOTE: On Linux, upon launch the build is so slow.
+
+## Linux
+
+Building an AppImage.
+
+See https://bitjockey.space/Building-Flutter-apps-for-distribution#build-1.
+
+```shell
+flutter build linux --release -v
+cp -r build/linux/x64/release/bundle $PWD/AppDir  # where $PWD is this root repo
+appimage-builder --recipe AppImageBuilder.yml
 ```
 
 # Troubleshooting
