@@ -152,6 +152,8 @@ $ flutter run -d linux --verbose
 
 # Building
 
+NOTE: On Linux, upon launch the build is so slow.
+
 ## Linux
 
 Building an AppImage.
