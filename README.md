@@ -143,6 +143,9 @@ macOS (desktop)    • macos                                • darwin-arm64   �
 Chrome (web)       • chrome                               • web-javascript • Google Chrome 98.0.4758.102
 
 $ flutter run -d 'iphone 11' # launch app in Simulator
+
+# Launch on Linux
+$ flutter run -d linux --verbose
 ```
 
 # Troubleshooting
